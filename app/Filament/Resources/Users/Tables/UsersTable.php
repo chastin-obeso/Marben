@@ -27,6 +27,9 @@ class UsersTable
                 TextColumn::make('username')
                     ->searchable(),
                 TextColumn::make('status')
+                    ->formatStateUsing(fn($state, $record = null) => ((int) $state) ? 'Active' : 'Inactive')
+                    ->badge()
+                    ->color(fn($state) => ((int) $state) ? 'success' : 'danger')
                     ->searchable(),
                 TextColumn::make('roles.name')
                     ->searchable(),
