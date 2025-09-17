@@ -28,7 +28,7 @@ class UsersTable
                     ->searchable(),
                 TextColumn::make('status')
                     ->searchable(),
-                TextColumn::make('role')
+                TextColumn::make('roles.name')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

@@ -14,8 +14,12 @@ class UserInfolist
                 TextEntry::make('name'),
                 TextEntry::make('username'),
                 TextEntry::make('phone'),
-                TextEntry::make('status'),
-                TextEntry::make('role'),
+                TextEntry::make('status')
+                    ->formatStateUsing(fn($state, $record = null) => ((int) $state) ? 'Active' : 'Inactive')
+                    ->badge()
+                    ->color(fn($state) => ((int) $state) ? 'success' : 'danger'),
+                TextEntry::make('roles.name')
+                    ->label('Role'),
                 TextEntry::make('created_at')
                     ->dateTime(),
                 TextEntry::make('updated_at')
