@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
 
 class UserForm
 {
@@ -25,8 +26,11 @@ class UserForm
                 Toggle::make('status')
                     ->required()
                     ->default('Active'),
-                TextInput::make('role')
-                    ->required(),
+                Select::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
             ]);
     }
 }
