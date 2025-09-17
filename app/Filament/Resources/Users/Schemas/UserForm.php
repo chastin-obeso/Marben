@@ -18,19 +18,24 @@ class UserForm
                 TextInput::make('email')
                     ->email()
                     ->required(),
+                TextInput::make('phone')
+                    ->maxLength(11)
+                    ->required(),
                 TextInput::make('username')
                     ->required(),
                 TextInput::make('password')
                     ->password()
                     ->required(),
+                
+                Select::make('role')
+                    ->label('Role')
+                    ->relationship('roles', 'name')
+                    ->preload()
+                    ->searchable()
+                    ->required(),
                 Toggle::make('status')
                     ->required()
                     ->default('Active'),
-                Select::make('roles')
-                    ->relationship('roles', 'name')
-                    ->multiple()
-                    ->preload()
-                    ->searchable(),
             ]);
     }
 }
