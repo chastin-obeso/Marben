@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             // ->brandName('MBR-E Marben')
-            ->brandLogo('/images/logo.jpg')
+            // ->brandLogo('/images/logo.jpg')
             ->brandLogoHeight('5vh')
             ->login()
             ->colors([
