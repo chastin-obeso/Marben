@@ -29,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             // ->brandName('MBR-E Marben')
-            // ->brandLogo('/images/logo.jpg')
+            ->brandLogo(asset('images/logo.jpg'))
             ->brandLogoHeight('5vh')
             ->login()
             ->colors([
@@ -60,6 +60,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->maxContentWidth('full')
+            ->viteTheme('resources/css/filament/admin/theme.css');
     }
 }

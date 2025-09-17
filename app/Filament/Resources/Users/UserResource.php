@@ -26,7 +26,7 @@ class UserResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return UserForm::configure($schema);
+        return UserForm::configure($schema)->extraAttributes(['class' => 'w-1/2']);
     }
 
     public static function infolist(Schema $schema): Schema

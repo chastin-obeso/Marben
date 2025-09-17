@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Tables\Columns\ToggleColumn;
 
 class UsersTable
 {
@@ -15,20 +17,28 @@ class UsersTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->label('Full Name')
+                TextColumn::make('email')
+                    ->label('Email address')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('email')
-                    ->searchable(),
+                TextColumn::make('name'),
                 TextColumn::make('phone')
-                    ->label('Contact Number')    
                     ->searchable(),
                 TextColumn::make('username')
                     ->searchable(),
-                TextColumn::make('status')
+                ToggleColumn::make('status')
+                    ->label('Active')  
+                    ->onIcon(Heroicon::Check)
+                    ->offIcon(Heroicon::XMark) 
+                    // ->color(function($record) {
+                    //     if ($record->status === 'Active') {
+                    //         return 'success';
+                    //     } else  {
+                    //         return 'danger';
+                    //     }
+                    // })
                     ->searchable(),
-                TextColumn::make('role')
+                TextColumn::make('roles.name')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
