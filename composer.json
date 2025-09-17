@@ -9,6 +9,7 @@
         "php": "^8.2",
         "bezhansalleh/filament-shield": "^4.0",
         "filament/filament": "~4.0",
+        "guava/calendar": "^2.0",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9"
     },
