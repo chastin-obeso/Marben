@@ -18,7 +18,13 @@ class JobOrderForm
                 TextInput::make('job_order_number')
                     ->required()
                     ->unique(ignoreRecord: true),
-                TextInput::make('service_type')
+                Select::make('service_type')
+                    ->options([
+                        'Layout' => 'Layout',
+                        'Programs' => 'Programs',
+                        'Printing/Binding' => 'Printing/Binding',
+                        'Repair' => 'Repair',
+                    ])
                     ->required(),
                 TextInput::make('description'),
                 DatePicker::make('date_requested'),
