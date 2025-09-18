@@ -27,10 +27,11 @@ class JobOrderForm
                     ])
                     ->required(),
                 TextInput::make('description'),
-                DatePicker::make('date_requested'),
-                DatePicker::make('date_started'),
-                DatePicker::make('date_targed'),
-                DatePicker::make('date_finished'),
+                // DatePicker::make('date_requested'),
+                // DatePicker::make('date_started'),
+                DatePicker::make('date_target')
+                ->minDate(now()),
+                // DatePicker::make('date_finished'),
                 Select::make('status')
                     ->options([
                         'Pending' => 'Pending',
