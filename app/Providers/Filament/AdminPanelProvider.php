@@ -24,25 +24,28 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        // dd(asset('images/logo.jpg'));
         return $panel
             ->default()
             ->id('admin')
             ->path('admin')
             // ->brandName('MBR-E Marben')
-            ->brandLogo(asset('images/logo.jpg'))
+            ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('5vh')
+            ->darkMode(false, isForced: true)
             ->login()
             ->colors([
                 'primary' => Color::Lime[400],   
+                'gray-1' => Color::Gray
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
-                Dashboard::class,
+                // Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
+                // AccountWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -62,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->maxContentWidth('full')
+            ->unsavedChangesAlerts()
             ->viteTheme('resources/css/filament/admin/theme.css');
     }
 }

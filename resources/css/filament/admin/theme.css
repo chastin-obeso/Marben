@@ -4,3 +4,25 @@
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
 @source '../../../../vendor/guava/calendar/resources/**/*';
+
+.fi-modal-header 
+{
+    @apply bg-gradient-to-r from-lime-400 from-10% via-lime-300 via-30% to-white to-90%;
+    @apply p-5;
+}
+
+.fi-modal-heading
+{
+    @apply text-2xl;
+}
+
+.fi-sidebar
+{
+    @apply bg-gradient-to-t from-lime-400 from-10% via-lime-300 via-30% to-white to-90%
+}
+
+.fi-sidebar-item-btn
+{
+    @apply p-0.5;
+}
+

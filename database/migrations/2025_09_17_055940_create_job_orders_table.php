@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('job_orders', function (Blueprint $table) {
             $table->id();
-            $table->integer('job_order_number');
+            $table->string('job_order_number', 10);
             $table->string('service_type');
             $table->string('description')->nullable();
             $table->date('date_requested')->nullable();

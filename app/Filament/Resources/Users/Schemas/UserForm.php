@@ -2,14 +2,15 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
-use Filament\Facades\Filament;
 use Filament\Schemas\Schema;
+use Filament\Facades\Filament;
+use Filament\Support\Enums\Width;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Forms\Components\CheckboxList;
-use Filament\Schemas\Components\Section;
-use Filament\Support\Enums\Width;
 
 class UserForm
 {
@@ -44,6 +45,13 @@ class UserForm
                                 ->relationship('roles', 'name')
                                 ->searchable(),
                         ]),
+                        Select::make('service_type')
+                            ->multiple()
+                            ->relationship('serviceTypes', 'service')
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('service')
+                            ]),
                     ])
                     ->columnSpanFull()
                     ->extraAttributes([

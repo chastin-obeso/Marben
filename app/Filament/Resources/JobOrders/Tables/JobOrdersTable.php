@@ -24,7 +24,8 @@ class JobOrdersTable
                     ->label('Customer')
                     ->searchable(),
                 TextColumn::make('description')
-                    ->searchable(),
+                    ->searchable()
+                    ->html(),
                 TextColumn::make('date_requested')
                     ->date()
                     ->sortable(),

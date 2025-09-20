@@ -29,7 +29,7 @@ class JobOrderResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return JobOrderForm::configure($schema);
+        return JobOrderForm::configure($schema, isFullWidthCustomer: true);
     }
 
     public static function infolist(Schema $schema): Schema
@@ -64,9 +64,9 @@ class JobOrderResource extends Resource
     {
         return [
             'index' => ListJobOrders::route('/'),
-            'create' => CreateJobOrder::route('/create'),
+            // 'create' => CreateJobOrder::route('/create'),
             'view' => ViewJobOrder::route('/{record}'),
-            'edit' => EditJobOrder::route('/{record}/edit'),
+            // 'edit' => EditJobOrder::route('/{record}/edit'),
         ];
     }
 }

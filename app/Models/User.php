@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -28,7 +29,8 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'password',
         'phone',
         'status',
-        'role'
+        'role',
+        'service_types'
     ];
 
     /**
@@ -51,6 +53,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'service_types' => 'array'
         ];
     }
 
@@ -62,5 +65,12 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->role === 'admin' || true;
+    }
+
+    // Relationship section
+
+    public function serviceTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(ServiceType::class);
     }
 }

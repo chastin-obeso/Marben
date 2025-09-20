@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class JobOrder extends Model
 {
@@ -18,6 +19,8 @@ class JobOrder extends Model
         'date_finished',
         'status',
         'customer_id',
+        'user_id',
+        'series'
     ];
     public $timestamps = false;
 
@@ -33,6 +36,11 @@ class JobOrder extends Model
 
     public function customer() 
     {
-        return $this->belongsTo(Customer::class, 'customer_id');
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function scopeDateBetween(Builder $query, array $date)
+    {
+        $query->whereBetween('date_requested', [$date]);
     }
 }
