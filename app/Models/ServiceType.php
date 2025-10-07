@@ -6,5 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class ServiceType extends Model
 {
-    protected $guarded = [];
+    protected $table = 'service_types';
+
+    protected $fillable = [
+        'service'
+    ];
+    public $timestamps = false;
 }

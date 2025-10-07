@@ -38,7 +38,10 @@ class JobOrder extends Model
     {
         return $this->belongsTo(Customer::class);
     }
-
+    public function serviceType() 
+    {
+        return $this->belongsTo(ServiceType::class);
+    }
     public function scopeDateBetween(Builder $query, array $date)
     {
         $query->whereBetween('date_requested', [$date]);

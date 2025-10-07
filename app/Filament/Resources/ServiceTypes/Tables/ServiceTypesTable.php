@@ -1,42 +1,23 @@
 <?php
 
-namespace App\Filament\Resources\Users\Tables;
+namespace App\Filament\Resources\ServiceTypes\Tables;
 
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use Filament\Actions\CreateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Support\Icons\Heroicon;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
 
-class UsersTable
+class ServiceTypesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('email')
-                    ->label('Email address')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('name'),
-                TextColumn::make('phone')
+                TextColumn::make('service')
                     ->searchable(),
-                TextColumn::make('username')
-                    ->searchable(),
-                ToggleColumn::make('status')
-                    ->label('Active')  
-                    ->onIcon(Heroicon::Check)
-                    ->offIcon(Heroicon::XMark) 
-                    ->searchable(),
-                TextColumn::make('serviceTypes.service')
-                    ->label('Services Offered')
-                    ->searchable(),
-                TextColumn::make('roles.name')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

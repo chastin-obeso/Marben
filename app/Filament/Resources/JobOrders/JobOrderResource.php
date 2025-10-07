@@ -25,7 +25,7 @@ class JobOrderResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Job Orders';
+    protected static ?string $recordTitleAttribute = 'job_order_number';
 
     public static function form(Schema $schema): Schema
     {

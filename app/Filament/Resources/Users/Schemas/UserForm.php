@@ -7,6 +7,7 @@ use Filament\Facades\Filament;
 use Filament\Support\Enums\Width;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Fieldset;
@@ -40,18 +41,25 @@ class UserForm
                                 ->required()
                                 ->revealable(),
                             TextInput::make('phone'),
-                            CheckboxList::make('roles')
-                                ->columnSpanFull()
+                            Select::make('role')
+                                ->label('Role')
                                 ->relationship('roles', 'name')
+                                ->preload()
+                                ->createOptionForm([
+                                    TextInput::make('name')
+                                ])
                                 ->searchable(),
+                            Select::make('service_type')
+                                ->label('Services offered')
+                                ->multiple()
+                                ->relationship('serviceTypes', 'service')
+                                ->preload()
+                                ->createOptionForm([
+                                    TextInput::make('service')
+                                ]),
                         ]),
-                        Select::make('service_type')
-                            ->multiple()
-                            ->relationship('serviceTypes', 'service')
-                            ->preload()
-                            ->createOptionForm([
-                                TextInput::make('service')
-                            ]),
+                        
+                        
                     ])
                     ->columnSpanFull()
                     ->extraAttributes([

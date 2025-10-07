@@ -38,11 +38,11 @@ class JobOrderForm
                     ])
                     ->createOptionAction(function(Action $action) {
                         $action->modalWidth('md')
-                            ->modalHeading('Edit Customer');
+                            ->modalHeading('New Customer');
                     })
                     ->editOptionAction(function(Action $action) {
                         $action->modalWidth('md')
-                            ->modalHeading('Create Customer');
+                            ->modalHeading('Edit Customer Details');
                     })
                     ->columnSpan(fn() => $isFullWidthCustomer ? 2 : 1),
                 Section::make('Select a Service')
@@ -54,11 +54,16 @@ class JobOrderForm
                             ->default(now())
                             ,
                         Select::make('service_type')
-                            ->options([
-                                'Layouts' => 'Layouts',
-                                'Programs' => 'Programs',
-                                'Printing/Bindings' => 'Printing/Bindings',
-                                'Repair' => 'Repair',
+                            ->relationship('serviceType', 'service')
+                            ->createOptionForm([
+                                TextInput::make('service')
+                                    ->required()
+                                    ->columnSpanFull(),
+                            ])
+                            ->editOptionForm([
+                                TextInput::make('service')
+                                    ->required()
+                                    ->columnSpanFull(),
                             ]),
                         Select::make('user_id')
                             ->label('Employee')
