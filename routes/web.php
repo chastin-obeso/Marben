@@ -4,12 +4,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
-// Route::get('/', function () {
-//     if (Auth::check()) {
-//         return redirect()->route('home');
-//     }
-//     return view('login');
-// })->name('login');
+Route::get('/', function () {
+        return redirect()->route('filament.admin.pages.dashboard');
+})->name('login');
 
 // Route::get('/login', function () {
 //     return view('login');
