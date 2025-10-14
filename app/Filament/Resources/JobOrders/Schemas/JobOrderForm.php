@@ -51,9 +51,8 @@ class JobOrderForm
                     ->schema([
                         DatePicker::make('date_requested')
                             ->label('Appointment Date')
-                            ->default(now())
-                            ,
-                        Select::make('service_type')
+                            ->default(now()),
+                        Select::make('service_type_id')
                             ->relationship('serviceType', 'service')
                             ->searchable()
                             ->preload()

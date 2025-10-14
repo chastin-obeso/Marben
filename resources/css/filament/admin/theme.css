@@ -9,6 +9,7 @@
 {
     @apply bg-gradient-to-r from-lime-400 from-10% via-lime-300 via-30% to-white to-90%;
     @apply p-5;
+    @apply rounded-t-lg;
 }
 
 .fi-modal-heading

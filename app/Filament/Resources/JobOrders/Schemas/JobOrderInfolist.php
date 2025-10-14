@@ -13,7 +13,8 @@ class JobOrderInfolist
         return $schema
             ->components([
                 TextEntry::make('job_order_number'),
-                TextEntry::make('service_type'),
+                TextEntry::make('ServiceType.service')
+                    ->label('Service Type'),
                 TextEntry::make('description'),
                 TextEntry::make('date_requested')
                     ->date(),

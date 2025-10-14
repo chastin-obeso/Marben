@@ -58,7 +58,7 @@ class JobOrderResource extends Resource
         return [
             RelationManagers\LogsRelationManager::class,
             RelationManagers\PartsRelationManager::class,
-            // RelationManagers\CustomersRelationManager::class,
+            RelationManagers\BillsRelationManager::class,
         ];
     }
 
@@ -66,9 +66,7 @@ class JobOrderResource extends Resource
     {
         return [
             'index' => ListJobOrders::route('/'),
-            // 'create' => CreateJobOrder::route('/create'),
             'view' => ViewJobOrder::route('/{record}'),
-            // 'edit' => EditJobOrder::route('/{record}/edit'),
         ];
     }
 }

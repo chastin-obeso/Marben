@@ -56,4 +56,6 @@ class Bill extends Model
     {
         return $this->hasMany(ServiceInvoice::class);
     }
+
+        public $timestamps = false;
 }

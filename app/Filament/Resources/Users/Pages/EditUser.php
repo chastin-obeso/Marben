@@ -15,7 +15,8 @@ class EditUser extends EditRecord
     {
         return [
             ViewAction::make(),
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->before(fn ($record) => $record->update(['status' => false])),
         ];
     }
 }

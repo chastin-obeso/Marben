@@ -2,11 +2,16 @@
 
 namespace App\Filament\Resources\JobOrders\Pages;
 
-use App\Filament\Resources\JobOrders\JobOrderResource;
+use App\Models\Bill;
 use App\Models\JobOrder;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\HtmlString;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Forms\Components\DatePicker;
+use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\JobOrders\JobOrderResource;
 
 class ListJobOrders extends ListRecords
 {
@@ -30,11 +35,14 @@ class ListJobOrders extends ListRecords
     public function generateLastJobOrderNumber(): array
     {
         $job_order = JobOrder::whereYear('date_requested', now()->year)->latest('series')->first();
+        
         $series = $job_order?->series + 1;
         return [
             'series' => $series,
-            'job_order_number' => '#JO' . sprintf('%05d', $series)
+            'job_order_number' => 'JO#' . sprintf('%05d', $series)
         ];
 
     }
+
+    
 }

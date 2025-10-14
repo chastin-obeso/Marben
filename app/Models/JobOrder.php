@@ -11,16 +11,16 @@ class JobOrder extends Model
 
     protected $fillable = [
         'job_order_number',
-        'service_type',
         'description',
         'date_requested',
         'date_started',
-        'date_targed',
+        'date_target',
         'date_finished',
         'status',
         'customer_id',
         'user_id',
-        'series'
+        'series',
+        'service_type_id'
     ];
     public $timestamps = false;
 
@@ -41,6 +41,11 @@ class JobOrder extends Model
     public function serviceType() 
     {
         return $this->belongsTo(ServiceType::class);
+    }
+    
+    public function bills()
+    {
+        return $this->hasMany(Bill::class, 'job_order_id');
     }
     public function scopeDateBetween(Builder $query, array $date)
     {

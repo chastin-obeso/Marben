@@ -5,11 +5,13 @@ namespace App\Filament\Resources\Users\Tables;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Radio;
 
 class UsersTable
 {
@@ -18,6 +20,9 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('email')
+                    ->color(
+                        fn ($record) => $record->status === 1 ? 'success' : 'danger'
+                    )
                     ->label('Email address')
                     ->searchable()
                     ->sortable(),
@@ -27,9 +32,9 @@ class UsersTable
                 TextColumn::make('username')
                     ->searchable(),
                 ToggleColumn::make('status')
-                    ->label('Active')  
-                    ->onIcon(Heroicon::Check)
-                    ->offIcon(Heroicon::XMark) 
+                    ->label('Active')
+                    ->onIcon('heroicon-o-check')
+                    ->offIcon('heroicon-o-x-mark')
                     ->searchable(),
                 TextColumn::make('serviceTypes.service')
                     ->label('Services Offered')
@@ -47,7 +52,19 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Filter::make('status_filter')
+                    ->label('Status')
+                    ->schema([
+                        Radio::make('status')
+                            ->inline()
+                            ->options([
+                                '' => 'All',
+                                '1' => 'Active',
+                                '0' => 'Inactive',
+                            ])
+                            ->default(''),
+                    ])
+                    ->query(fn ($query, array $data) => isset($data['status']) && $data['status'] !== '' ? $query->where('status', (bool) $data['status']) : $query),
             ])
             ->recordActions([
                 ViewAction::make(),

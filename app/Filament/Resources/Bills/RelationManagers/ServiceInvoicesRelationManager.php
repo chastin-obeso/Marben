@@ -2,16 +2,16 @@
 
 namespace App\Filament\Resources\JobOrders\RelationManagers;
 
-use App\Filament\Resources\Customers\CustomerResource;
+use Filament\Tables\Table;
 use Filament\Actions\CreateAction;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Table;
+use App\Filament\Resources\ServiceInvoices\ServiceInvoiceResource;
 
-class CustomersRelationManager extends RelationManager
+class ServiceInvoicesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'customers';
+    protected static string $relationship = 'service_invoices';
 
-    protected static ?string $relatedResource = CustomerResource::class;
+    protected static ?string $relatedResource = ServiceInvoiceResource::class;
 
     public function table(Table $table): Table
     {
