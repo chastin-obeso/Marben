@@ -9,6 +9,7 @@ use App\Filament\Resources\ServiceTypes\Schemas\ServiceTypeForm;
 use App\Filament\Resources\ServiceTypes\Tables\ServiceTypesTable;
 use App\Models\ServiceType;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -19,6 +20,7 @@ class ServiceTypeResource extends Resource
     protected static ?string $model = ServiceType::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|UnitEnum|null $navigationGroup = 'Job Order Management';
 
     protected static ?string $recordTitleAttribute = 'service';
 

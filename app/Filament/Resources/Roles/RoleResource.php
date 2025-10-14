@@ -29,6 +29,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
 use Essentials\BelongsToParent;
+use UnitEnum;
 
 class RoleResource extends Resource
 {
@@ -44,6 +45,7 @@ class RoleResource extends Resource
         }
 
     protected static ?string $recordTitleAttribute = 'name';
+    protected static string|UnitEnum|null $navigationGroup = 'User Management';
 
     public static function form(Schema $schema): Schema
     {

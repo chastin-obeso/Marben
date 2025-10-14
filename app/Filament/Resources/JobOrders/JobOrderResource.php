@@ -11,6 +11,7 @@ use App\Filament\Resources\JobOrders\Schemas\JobOrderInfolist;
 use App\Filament\Resources\JobOrders\Tables\JobOrdersTable;
 use App\Models\JobOrder;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -24,6 +25,7 @@ class JobOrderResource extends Resource
     protected static ?string $model = JobOrder::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|UnitEnum|null $navigationGroup = 'Job Order Management';
 
     protected static ?string $recordTitleAttribute = 'job_order_number';
 
