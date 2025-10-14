@@ -55,19 +55,22 @@ class JobOrderForm
                             ,
                         Select::make('service_type')
                             ->relationship('serviceType', 'service')
-                            ->createOptionForm([
-                                TextInput::make('service')
-                                    ->required()
-                                    ->columnSpanFull(),
-                            ])
-                            ->editOptionForm([
-                                TextInput::make('service')
-                                    ->required()
-                                    ->columnSpanFull(),
-                            ]),
+                            ->searchable()
+                            ->preload()
+                            ->required(),
                         Select::make('user_id')
                             ->label('Employee')
-                            ->options(fn(Get $get) => User::whereRelation('serviceTypes', 'service', $get('service_type'))->pluck('name', 'id'))
+                            ->options(function (Get $get) {
+                                $selected = $get('service_type');
+
+                                if (empty($selected)) {
+                                    return User::pluck('name', 'id');
+                                }
+
+                                return User::whereHas('serviceTypes', function ($q) use ($selected) {
+                                    $q->where('service_types.id', $selected);
+                                })->pluck('name', 'id');
+                            })
                             ->searchable()
                             ->columnSpanFull(),
                         RichEditor::make('description')
