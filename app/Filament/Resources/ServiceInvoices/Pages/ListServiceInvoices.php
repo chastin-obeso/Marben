@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ServiceInvoices\Pages;
 
+use App\Models\Bill;
 use App\Models\ServiceInvoice;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
@@ -30,6 +31,7 @@ class ListServiceInvoices extends ListRecords
                             $bill->amount_due -= $invoice->amount_paid;
                             $bill->save();
                         }
+                        $invoice->bill->updatePaymentStatus(false);
                     })
                 ->closeModalByClickingAway(false),
         ];
@@ -37,7 +39,7 @@ class ListServiceInvoices extends ListRecords
 
     public function generateLastServiceInvoiceNumber(): array
     {
-        $invoice = ServiceInvoice::whereYear('payment_date', now()->year)->latest('service_invoice_series')->first();
+        $invoice = ServiceInvoice::withTrashed()->whereYear('payment_date', now()->year)->latest('service_invoice_series')->first();
         $series = $invoice?->service_invoice_series + 1;
         return [
             'service_invoice_series' => $series,

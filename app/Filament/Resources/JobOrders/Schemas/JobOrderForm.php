@@ -49,9 +49,9 @@ class JobOrderForm
                     ->description('Details/Specific Instructions')
                     ->columnSpanFull()
                     ->schema([
-                        DatePicker::make('date_requested')
-                            ->label('Appointment Date')
-                            ->default(now()),
+                        DatePicker::make('date_target')
+                            ->label('Target Date')
+                            ->required(),
                         Select::make('service_type_id')
                             ->relationship('serviceType', 'service')
                             ->searchable()
@@ -60,7 +60,7 @@ class JobOrderForm
                         Select::make('user_id')
                             ->label('Employee')
                             ->options(function (Get $get) {
-                                $selected = $get('service_type');
+                                $selected = $get('service_type_id');
 
                                 if (empty($selected)) {
                                     return User::pluck('name', 'id');

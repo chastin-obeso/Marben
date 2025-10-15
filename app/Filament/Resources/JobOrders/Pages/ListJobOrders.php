@@ -23,9 +23,8 @@ class ListJobOrders extends ListRecords
             CreateAction::make()
                 ->modalHeading('New Job Order')
                 ->mutateDataUsing(function($data) {
-                    // dd(array_merge($data, $this->generateLastJobOrderNumber()));
-                    $data['status'] = 'Pending';
-                    // dd($data);
+                    $data['status'] = 'Scheduled';
+                    $data['date_requested'] = now();
                     return array_merge($data, $this->generateLastJobOrderNumber());
                 })
                 ->closeModalByClickingAway(false),

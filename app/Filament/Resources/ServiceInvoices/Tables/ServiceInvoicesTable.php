@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\ServiceInvoices\Tables;
 
 use Filament\Tables\Table;
+use Filament\Actions\Action;
+use App\Models\ServiceInvoice;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Actions\BulkActionGroup;
@@ -56,6 +58,22 @@ class ServiceInvoicesTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                Action::make('refund')
+                    ->label('Refund')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirm Refund')
+                    ->modalDescription('Are you sure you want to refund this payment? This action cannot be undone.')
+                    ->action(function (ServiceInvoice $invoice) {
+                        $invoice->delete();
+                        $bill = $invoice->bill;
+                        if ($bill) {
+                            $bill->amount_due += $invoice->amount_paid;
+                            $bill->save();
+                        }
+                        $invoice->bill->updatePaymentStatus(false);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

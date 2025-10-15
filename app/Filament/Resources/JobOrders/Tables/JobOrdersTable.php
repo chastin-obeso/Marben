@@ -40,7 +40,7 @@ class JobOrdersTable
                     ->searchable(),
                 TextColumn::make('description')
                     ->searchable()
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->html(),
                 TextColumn::make('date_requested')
                     ->date()
@@ -52,8 +52,9 @@ class JobOrdersTable
                     ->searchable(),
                     //->sortable(),
                 TextColumn::make('date_target')
+                    ->label('Target Date')
                     ->date()
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable()
                     ->searchable(),
                     //->sortable(),
                 TextColumn::make('date_finished')
@@ -99,7 +100,7 @@ class JobOrdersTable
                         'amount_due'   => $data['total_amount'],
                         'due_date'     => $data['due_date'],
                         'particulars'  => $data['particulars'],
-                        'status'       => 'Pending',
+                        'status'       => 'Unpaid',
                         'bill_date'    => now(),
                         'bill_series'  => JobOrdersTable::generateLastBillNumber()['bill_series'],
                         'bill_number'  => JobOrdersTable::generateLastBillNumber()['bill_number']

@@ -21,7 +21,7 @@ class ListBills extends ListRecords
                 ->modalHeading('Add a New Bill Record')
                 ->mutateDataUsing(function($data) {
                     // dd(array_merge($data, $this->generateLastJobOrderNumber()));
-                    $data['status'] = 'Pending';
+                    $data['status'] = 'Unpaid';
                     $data['amount_due'] = $data['total_amount'];
                     $data['bill_date'] = now();
                     return array_merge($data, $this->generateLastBillNumber());
@@ -32,7 +32,7 @@ class ListBills extends ListRecords
 
     public function generateLastBillNumber(): array
     {
-        $bill = Bill::whereYear('bill_date', now()->year)->latest('bill_series')->first();
+        $bill = Bill::withTrashed()->whereYear('bill_date', now()->year)->latest('bill_series')->first();
         $series = $bill?->bill_series + 1;
         return [
             'bill_series' => $series,

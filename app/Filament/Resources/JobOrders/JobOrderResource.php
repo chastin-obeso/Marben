@@ -58,7 +58,6 @@ class JobOrderResource extends Resource
         return [
             RelationManagers\LogsRelationManager::class,
             RelationManagers\PartsRelationManager::class,
-            RelationManagers\BillsRelationManager::class,
         ];
     }
 

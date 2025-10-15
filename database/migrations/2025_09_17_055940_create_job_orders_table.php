@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->date('date_requested')->nullable();
             $table->date('date_started')->nullable();
-            $table->date('date_targed')->nullable();
+            $table->date('date_target')->nullable();
             $table->date('date_finished')->nullable();
             $table->string('status'); // e.g., pending, in-progress, completed
             $table->boolean('is_archived')->default(false); // Soft delete simulation
