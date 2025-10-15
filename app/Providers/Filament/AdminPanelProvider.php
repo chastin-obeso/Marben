@@ -74,6 +74,12 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make()
                         ->label('Billing and Payments')
                         ->icon('heroicon-o-document-currency-dollar'),
+                    NavigationGroup::make()
+                        ->label('Job Order Management')
+                        ->icon('heroicon-c-wrench-screwdriver'),
+                    NavigationGroup::make()
+                        ->label('User Management')
+                        ->icon('heroicon-o-users'),
                 ]
             )
             ->viteTheme('resources/css/filament/admin/theme.css');

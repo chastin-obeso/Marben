@@ -12,6 +12,13 @@
     @apply rounded-t-lg;
 }
 
+.dark .fi-modal-header 
+{
+    @apply bg-gradient-to-r from-lime-950 from-0% via-lime-950 via-30% to-black to-90%;
+    @apply p-5;
+    @apply rounded-t-lg;
+}
+
 .fi-modal-heading
 {
     @apply text-2xl;
@@ -52,6 +59,15 @@
     @apply text-white;
 }
 
+.fi-modal-description
+{
+    @apply text-gray-800;
+}
+
+.fi-modal-description
+{
+    @apply text-white;
+}
 
 
 

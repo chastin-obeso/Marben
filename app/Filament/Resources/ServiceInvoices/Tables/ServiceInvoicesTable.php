@@ -56,8 +56,10 @@ class ServiceInvoicesTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->visible(fn (ServiceInvoice $record) => !$record->deleted_at),
                 Action::make('refund')
+                    ->visible(fn (ServiceInvoice $record) => !$record->deleted_at)
                     ->label('Refund')
                     ->icon('heroicon-o-currency-dollar')
                     ->color('danger')
