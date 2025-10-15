@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\ServiceInvoices\Pages;
 
-use App\Filament\Resources\ServiceInvoices\ServiceInvoiceResource;
+use App\Models\ServiceInvoice;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\ServiceInvoices\ServiceInvoiceResource;
 
 class ListServiceInvoices extends ListRecords
 {
@@ -19,13 +20,31 @@ class ListServiceInvoices extends ListRecords
                 ->color('primary')
                 ->modalHeading('Pay Bill')
                 ->mutateDataUsing(function($data) {
-                    // dd(array_merge($data, $this->generateLastJobOrderNumber()));
-                    $data['status'] = 'Pending';
-                    $data['amount_due'] = $data['total_amount'];
-                    $data['bill_date'] = now();
-                    return array_merge($data, $this->generateLastBillNumber());
+                    $data['payment_date'] = now();
+                    return array_merge($data, $this->generateLastServiceInvoiceNumber());
                 })
+                 ->action(function (array $data) {
+                        $invoice = ServiceInvoice::create($data);
+                        $bill = $invoice->bill; 
+                        if ($bill) {
+                            $bill->amount_due -= $invoice->amount_paid;
+                            $bill->save();
+                        }
+                    })
                 ->closeModalByClickingAway(false),
         ];
     }
+
+    public function generateLastServiceInvoiceNumber(): array
+    {
+        $invoice = ServiceInvoice::whereYear('payment_date', now()->year)->latest('service_invoice_series')->first();
+        $series = $invoice?->service_invoice_series + 1;
+        return [
+            'service_invoice_series' => $series,
+            'service_invoice_number' => 'SI#' . sprintf('%05d', $series)
+        ];
+
+    }
+
+    
 }

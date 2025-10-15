@@ -19,6 +19,7 @@ class ServiceInvoiceForm
                     ->label('Amount Due')
                     ->numeric()
                     ->disabled()
+                    ->dehydrated(false)
                     ->prefix('₱'),
                 TextInput::make('amount_paid')
                     ->label('Amount Paid')

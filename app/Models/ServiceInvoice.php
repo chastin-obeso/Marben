@@ -15,6 +15,7 @@ class ServiceInvoice extends Model
     protected $fillable = [
         'service_invoice_number',
         'service_invoice_series',
+        'reference_number',
         'amount_paid',
         'payment_type',
         'payment_date',
@@ -48,4 +49,6 @@ class ServiceInvoice extends Model
     {
         return $this->belongsTo(Bill::class);
     }
+
+    public $timestamps = false;
 }

@@ -65,4 +65,8 @@ class ServiceInvoiceResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+
+    
+
+    
 }
