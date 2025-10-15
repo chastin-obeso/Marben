@@ -29,14 +29,14 @@ class Calendar extends CalendarWidget
 
     public function getHeading(): string|HtmlString
     {
-        return  new HtmlString('<div>Job Orders</div>');
+        return  new HtmlString('<div>Calendar</div>');
     }
 
     public function createJobOrderAction(): CreateAction
     {
         return $this->createAction(JobOrder::class)
                     ->fillForm(fn(ContextualInfo $info) => [
-                        'date_requested' => $info->date->toDateString()
+                        'date_target' => $info->date->toDateString()
                     ])
                     ->mutateDataUsing(function($data) {
                         $data['status'] = 'Pending';
@@ -78,8 +78,8 @@ class Calendar extends CalendarWidget
         return $data
                 ->map(fn (JobOrder $job) => CalendarEvent::make($job)
                                                 ->title($job->job_order_number)
-                                                ->start($job->date_requested)
-                                                ->end($job->date_requested)
+                                                ->start($job->date_target)
+                                                ->end($job->date_target)
                                                 ->allDay()
                                                 ->model($job)
                 );

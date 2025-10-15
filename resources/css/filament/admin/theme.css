@@ -19,11 +19,39 @@
 
 .fi-sidebar
 {
-    @apply bg-gradient-to-t from-lime-400 from-10% via-lime-300 via-30% to-white to-90%
+    @apply bg-gradient-to-t from-lime-400 from-0% to-white to-50%;
+    @apply shadow-2xl;
 }
-
+.dark .fi-sidebar
+{
+    @apply bg-gradient-to-t from-lime-800 from-0% to-black to-50%;
+    @apply shadow-xl;
+    @apply shadow-lime-800;
+}
 .fi-sidebar-item-btn
 {
     @apply p-0.5;
 }
+
+/* .fi-icon
+{
+    @apply text-gray-900;
+} */
+.dark .fi-icon
+{
+    @apply text-white;
+}
+
+.fi-sidebar-group-label
+{
+    @apply text-black;
+}
+
+.dark .fi-sidebar-group-label
+{
+    @apply text-white;
+}
+
+
+
 

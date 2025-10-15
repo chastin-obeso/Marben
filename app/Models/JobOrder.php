@@ -47,6 +47,11 @@ class JobOrder extends Model
     {
         return $this->hasMany(Bill::class, 'job_order_id');
     }
+
+    public function user() 
+    {
+        return $this->belongsTo(User::class);
+    }
     public function scopeDateBetween(Builder $query, array $date)
     {
         $query->whereBetween('date_requested', [$date]);

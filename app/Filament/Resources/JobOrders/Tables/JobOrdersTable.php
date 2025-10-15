@@ -59,7 +59,7 @@ class JobOrdersTable
                     //->sortable(),
                 TextColumn::make('date_finished')
                     ->date()
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
@@ -70,8 +70,10 @@ class JobOrdersTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ViewAction::make()
+                ->label('Open Job Order')
+                ->button()
+                ->icon('heroicon-o-eye'),
                 Action::make('createBill')
                 ->label('Create Bill')
                 ->icon('heroicon-o-plus')

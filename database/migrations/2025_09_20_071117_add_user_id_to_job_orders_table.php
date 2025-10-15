@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('job_orders', function (Blueprint $table) {
             $table->foreignId('user_id')
                 ->nullable()
-                ->constrained('job_orders')
+                ->constrained('users')
                 ->onDelete('set null');
 
         });
@@ -26,7 +26,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('job_orders', function (Blueprint $table) {
-            $table->dropForeign('job_orders_user_id_foreign');
+            $table->dropForeign('users_user_id_foreign');
             $table->dropColumn('user_id');
         });
     }

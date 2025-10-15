@@ -4,6 +4,7 @@ namespace App\Filament\Resources\JobOrders\Schemas;
 
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class JobOrderInfolist
@@ -12,21 +13,46 @@ class JobOrderInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('job_order_number'),
-                TextEntry::make('ServiceType.service')
-                    ->label('Service Type'),
-                TextEntry::make('description'),
-                TextEntry::make('date_requested')
-                    ->date(),
-                TextEntry::make('date_started')
-                    ->date(),
-                TextEntry::make('date_targed')
-                    ->date(),
-                TextEntry::make('date_finished')
-                    ->date(),
-                TextEntry::make('status'),
-                TextEntry::make('customer.name')
-                    ->label('Customer'),
+                Section::make('Basic Information')
+                    ->description('Basic information about the job order.')
+                    ->columnSpanFull()
+                    ->columns(4)
+                    ->components([
+                        TextEntry::make('job_order_number'),
+                        TextEntry::make('ServiceType.service')
+                            ->label('Service Type'),
+                        TextEntry::make('customer.name')
+                            ->label('Customer'),
+                        TextEntry::make('status'),
+                ]),
+                Section::make('Description')
+                    ->collapsible()
+                    ->collapsed()
+                    ->columnSpanFull()
+                    ->components([
+                        TextEntry::make('description')
+                            ->hiddenLabel()
+                            ->html(),
+                ]),
+                Section::make('Other Information')
+                    ->collapsible()
+                    ->collapsed()
+                    ->columnSpanFull()
+                    ->columns(2)
+                    ->components([
+                        TextEntry::make('date_requested')
+                            ->date(),
+                        TextEntry::make('date_started')
+                            ->date(),
+                        TextEntry::make('date_target')
+                            ->label('Target Date')
+                            ->date(),
+                        TextEntry::make('date_finished')
+                            ->date(),
+                        
+                    
+                ]),
+                
             ]);
     }
 }

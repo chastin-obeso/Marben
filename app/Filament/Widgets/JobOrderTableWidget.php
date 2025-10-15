@@ -34,7 +34,7 @@ class JobOrderTableWidget extends TableWidget
             ->columns([
                 Stack::make([
                     TextColumn::make('job_order_number')
-                        ->description(fn($record) => "Date Requested: ". Carbon::parse($record->date_requested)->format('F d, Y'))
+                        ->description(fn($record) => "Target Date: ". Carbon::parse($record->date_target)->format('F d, Y'))
                         ->weight('bold'),
                     TextColumn::make('description')
                         ->html()

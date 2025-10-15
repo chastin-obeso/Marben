@@ -30,7 +30,7 @@ class BillResource extends Resource
 {
     protected static ?string $model = Bill::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationGroupIcon = Heroicon::DocumentCurrencyDollar;
     protected static string|UnitEnum|null $navigationGroup = 'Billing and Payments';
 
     protected static ?string $recordTitleAttribute = 'bill_number';
@@ -62,8 +62,8 @@ class BillResource extends Resource
         return [
             'index' => ListBills::route('/'),
             // 'create' => CreateBill::route('/create'),
-            'view' => ViewBill::route('/{record}'),
-            'edit' => EditBill::route('/{record}/edit'),
+            // 'view' => ViewBill::route('/{record}'),
+            // 'edit' => EditBill::route('/{record}/edit'),
         ];
     }
 

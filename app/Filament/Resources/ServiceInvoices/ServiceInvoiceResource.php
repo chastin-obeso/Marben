@@ -23,7 +23,7 @@ class ServiceInvoiceResource extends Resource
 {
     protected static ?string $model = ServiceInvoice::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationGroupIcon = Heroicon::DocumentCurrencyDollar;
     protected static string|UnitEnum|null $navigationGroup = 'Billing and Payments';
 
     public static function form(Schema $schema): Schema

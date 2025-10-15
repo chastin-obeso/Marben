@@ -56,7 +56,6 @@ class ServiceInvoicesTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
-                ViewAction::make(),
                 EditAction::make(),
                 Action::make('refund')
                     ->label('Refund')

@@ -2,34 +2,39 @@
 
 namespace App\Filament\Resources\JobOrders\RelationManagers;
 
-use Filament\Actions\AssociateAction;
-use Filament\Actions\BulkActionGroup;
+use Filament\Tables\Table;
+use Filament\Actions\Action;
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\AssociateAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Forms\Components\RichEditor;
+use Filament\Actions\DissociateBulkAction;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class LogsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'Logs';
-
+    protected static string $relationship = 'logs';
+            public function canCreate(): bool
+            {
+                return true;
+            }
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                RichEditor::make('details')
+                TextInput::make('details')
                     ->required(),
                 TextInput::make('date')
                     ->default(now())
-                    ->required(),
+                    ->disabled(),
             ]);
     }
 
@@ -46,16 +51,14 @@ class LogsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make(),
-                AssociateAction::make(),
+                
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ]);

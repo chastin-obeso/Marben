@@ -2,20 +2,22 @@
 
 namespace App\Filament\Resources\JobOrders\RelationManagers;
 
-use Filament\Actions\AssociateAction;
-use Filament\Actions\BulkActionGroup;
+use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\AssociateAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Actions\DissociateBulkAction;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class PartsRelationManager extends RelationManager
 {
@@ -30,16 +32,27 @@ class PartsRelationManager extends RelationManager
                     ->required(),
                 TextInput::make('unit_price')
                     ->label('Unit Price')
+                    ->reactive()
+                    ->afterStateUpdated(fn (Get $get, Set $set) =>
+                        $set('total_price', $get('unit_price') * $get('quantity'))
+                    )
                     ->numeric()
                         ->minValue(0)
                         ->rule('decimal:0,2')
                     ->required(),
                 TextInput::make('quantity')
                     ->label('Quantity')
+                    ->reactive()
+                    ->afterStateUpdated(fn (Get $get, Set $set) =>
+                        $set('total_price', $get('unit_price') * $get('quantity'))
+                    )
                     ->numeric()
                     ->required(),
                 TextInput::make('total_price')
                     ->label('Total Price')
+                    ->disabled()
+                    ->reactive()
+                    ->dehydrated()
                     ->numeric()
                         ->minValue(0)
                         ->rule('decimal:0,2')
@@ -71,16 +84,13 @@ class PartsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make(),
-                AssociateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ]);

@@ -2,23 +2,24 @@
 
 namespace App\Filament\Resources\JobOrders;
 
-use App\Filament\Resources\JobOrders\Pages\CreateJobOrder;
-use App\Filament\Resources\JobOrders\Pages\EditJobOrder;
-use App\Filament\Resources\JobOrders\Pages\ListJobOrders;
-use App\Filament\Resources\JobOrders\Pages\ViewJobOrder;
-use App\Filament\Resources\JobOrders\Schemas\JobOrderForm;
-use App\Filament\Resources\JobOrders\Schemas\JobOrderInfolist;
-use App\Filament\Resources\JobOrders\Tables\JobOrdersTable;
-use App\Models\JobOrder;
-use BackedEnum;
 use UnitEnum;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Resource;
+use BackedEnum;
+use App\Models\JobOrder;
+use Filament\Tables\Table;
 use Filament\Schemas\Schema;
+use Filament\Resources\Resource;
+use Filament\Support\Icons\Heroicon;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
+use Filament\Resources\RelationManagers\RelationGroup;
+use App\Filament\Resources\JobOrders\Pages\EditJobOrder;
+use App\Filament\Resources\JobOrders\Pages\ViewJobOrder;
+use Filament\Resources\RelationManagers\RelationManager;
+use App\Filament\Resources\JobOrders\Pages\ListJobOrders;
+use App\Filament\Resources\JobOrders\Pages\CreateJobOrder;
+use App\Filament\Resources\JobOrders\Schemas\JobOrderForm;
+use App\Filament\Resources\JobOrders\Tables\JobOrdersTable;
+use App\Filament\Resources\JobOrders\Schemas\JobOrderInfolist;
 
 class JobOrderResource extends Resource
 {
@@ -56,8 +57,10 @@ class JobOrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\LogsRelationManager::class,
-            RelationManagers\PartsRelationManager::class,
+            RelationGroup::make('Contacts',[
+                RelationManagers\PartsRelationManager::class,
+                RelationManagers\LogsRelationManager::class,
+            ]),
         ];
     }
 
@@ -65,6 +68,7 @@ class JobOrderResource extends Resource
     {
         return [
             'index' => ListJobOrders::route('/'),
+            'edit' => EditJobOrder::route('/{record}/edit'),
             'view' => ViewJobOrder::route('/{record}'),
         ];
     }

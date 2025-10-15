@@ -10,7 +10,7 @@ class ServiceInvoiceInfolist
     {
         return $schema
             ->components([
-                //
+                // Define infolist components here
             ]);
     }
 }
