@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('service_invoice_series')->unique();
             $table->float('amount_paid')->default(0);
             $table->string('payment_type');
+            $table->string('reference_number')->default('');
             $table->date('payment_date');
             $table->foreignId('bill_id')->constrained()->onDelete('cascade');
         });
