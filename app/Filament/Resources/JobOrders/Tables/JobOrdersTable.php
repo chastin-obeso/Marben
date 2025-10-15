@@ -28,34 +28,41 @@ class JobOrdersTable
             ->columns([
                 TextColumn::make('job_order_number')
                     ->label('Job Order #')
+                    ->toggleable()
                     ->searchable(),
                 TextColumn::make('serviceType.service')
                     ->label('Service')
+                    ->toggleable()
                     ->searchable(),
                 TextColumn::make('customer.name')
                     ->label('Customer')
+                    ->toggleable()
                     ->searchable(),
                 TextColumn::make('description')
                     ->searchable()
+                    ->toggleable()
                     ->html(),
                 TextColumn::make('date_requested')
                     ->date()
+                    ->toggleable()
                     ->sortable(),
                 TextColumn::make('date_started')
                     ->date()
-                    ->hidden() // to remove bloat in the table (too much info can kill a victorian era child)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                     //->sortable(),
                 TextColumn::make('date_target')
                     ->date()
-                    ->hidden() // to remove bloat in the table (too much info can kill a victorian era child)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                     //->sortable(),
                 TextColumn::make('date_finished')
                     ->date()
+                    ->toggleable()
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
+                    ->toggleable()
                     ->searchable(),
             ])
             ->filters([
