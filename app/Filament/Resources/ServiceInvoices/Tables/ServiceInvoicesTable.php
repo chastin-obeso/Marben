@@ -13,6 +13,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Schemas\Components\View;
 
 class ServiceInvoicesTable
 {
@@ -56,25 +57,31 @@ class ServiceInvoicesTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
+                ViewAction::make()
+                ->modalHeading('Service Invoice Details')
+                ->url(fn ($record) => request('activeRecord') == $record->getKey()
+                    ? null
+                    : \App\Filament\Resources\ServiceInvoices\ServiceInvoiceResource::getUrl('index', ['activeRecord' => $record])
+                ),
                 EditAction::make()
                     ->visible(fn (ServiceInvoice $record) => !$record->deleted_at),
-                Action::make('refund')
-                    ->visible(fn (ServiceInvoice $record) => !$record->deleted_at)
-                    ->label('Refund')
-                    ->icon('heroicon-o-currency-dollar')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->modalHeading('Confirm Refund')
-                    ->modalDescription('Are you sure you want to refund this payment? This action cannot be undone.')
-                    ->action(function (ServiceInvoice $invoice) {
-                        $invoice->delete();
-                        $bill = $invoice->bill;
-                        if ($bill) {
-                            $bill->amount_due += $invoice->amount_paid;
-                            $bill->save();
-                        }
-                        $invoice->bill->updatePaymentStatus(false);
-                    }),
+                // Action::make('refund')
+                //     ->visible(fn (ServiceInvoice $record) => !$record->deleted_at)
+                //     ->label('Refund')
+                //     ->icon('heroicon-o-currency-dollar')
+                //     ->color('danger')
+                //     ->requiresConfirmation()
+                //     ->modalHeading('Confirm Refund')
+                //     ->modalDescription('Are you sure you want to refund this payment? This action cannot be undone.')
+                //     ->action(function (ServiceInvoice $invoice) {
+                //         $invoice->delete();
+                //         $bill = $invoice->bill;
+                //         if ($bill) {
+                //             $bill->amount_due += $invoice->amount_paid;
+                //             $bill->save();
+                //         }
+                //         $invoice->bill->updatePaymentStatus(false);
+                //     }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

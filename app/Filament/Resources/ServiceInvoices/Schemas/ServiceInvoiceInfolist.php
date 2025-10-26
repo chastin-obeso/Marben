@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ServiceInvoices\Schemas;
 
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
 class ServiceInvoiceInfolist
@@ -10,7 +11,12 @@ class ServiceInvoiceInfolist
     {
         return $schema
             ->components([
-                // Define infolist components here
+                TextEntry::make('service_invoice_number')->label('Invoice Number'),
+                TextEntry::make('amount_paid')->label('Amount Paid')->money('PHP', true),
+                TextEntry::make('payment_type')->label('Payment Type'),
+                TextEntry::make('reference_number')->label('Reference Number'),
+                TextEntry::make('payment_date')->label('Payment Date')->date(),
+                TextEntry::make('bill.bill_number')->label('Bill Number'),
             ]);
     }
 }

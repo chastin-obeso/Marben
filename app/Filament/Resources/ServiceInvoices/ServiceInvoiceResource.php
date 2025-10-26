@@ -53,8 +53,8 @@ class ServiceInvoiceResource extends Resource
         return [
             'index' => ListServiceInvoices::route('/'),
             // 'create' => CreateServiceInvoice::route('/create'),
-            'view' => ViewServiceInvoice::route('/{record}'),
-            'edit' => EditServiceInvoice::route('/{record}/edit'),
+            // 'view' => ViewServiceInvoice::route('/{record}'),
+            // 'edit' => EditServiceInvoice::route('/{record}/edit'),
         ];
     }
 

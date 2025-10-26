@@ -130,23 +130,23 @@ class BillsTable
                     
                     )
                     ->closeModalByClickingAway(false),
-                Action::make('refund')
-                    ->visible(fn ($record) => $record->amount_due < $record->total_amount)
-                    ->label('Refund')
-                    ->icon('heroicon-o-currency-dollar')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->modalHeading('Confirm Refund')
-                    ->modalDescription('Are you sure you want to refund this bill? This action cannot be undone and will also refund all existing service invoice/s.')
-                    ->action(function (Bill $bill) {
-                        $invoices = $bill->serviceInvoices;
-                        foreach ($invoices as $invoice) {
-                            $invoice->delete();
-                            $bill->amount_due += $invoice->amount_paid;
-                        }
-                        $bill->save();
-                        $bill->updatePaymentStatus(true);
-                    }),
+                // Action::make('refund')
+                //     ->visible(fn ($record) => $record->amount_due < $record->total_amount)
+                //     ->label('Refund')
+                //     ->icon('heroicon-o-currency-dollar')
+                //     ->color('danger')
+                //     ->requiresConfirmation()
+                //     ->modalHeading('Confirm Refund')
+                //     ->modalDescription('Are you sure you want to refund this bill? This action cannot be undone and will also refund all existing service invoice/s.')
+                //     ->action(function (Bill $bill) {
+                //         $invoices = $bill->serviceInvoices;
+                //         foreach ($invoices as $invoice) {
+                //             $invoice->delete();
+                //             $bill->amount_due += $invoice->amount_paid;
+                //         }
+                //         $bill->save();
+                //         $bill->updatePaymentStatus(true);
+                //     }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
