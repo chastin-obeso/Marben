@@ -28,6 +28,7 @@ class ListJobOrders extends ListRecords
                     return array_merge($data, $this->generateLastJobOrderNumber());
                 })
                 ->closeModalByClickingAway(false),
+
         ];
     }
 

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use Illuminate\Foundation\Auth\User as AuthUser;
+use App\Models\Bill;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class BillPolicy
@@ -14,7 +17,7 @@ class BillPolicy
         return $authUser->can('ViewAny:Bill');
     }
 
-    public function view(AuthUser $authUser): bool
+    public function view(AuthUser $authUser, Bill $bill): bool
     {
         return $authUser->can('View:Bill');
     }
@@ -24,22 +27,22 @@ class BillPolicy
         return $authUser->can('Create:Bill');
     }
 
-    public function update(AuthUser $authUser): bool
+    public function update(AuthUser $authUser, Bill $bill): bool
     {
         return $authUser->can('Update:Bill');
     }
 
-    public function delete(AuthUser $authUser): bool
+    public function delete(AuthUser $authUser, Bill $bill): bool
     {
         return $authUser->can('Delete:Bill');
     }
 
-    public function restore(AuthUser $authUser): bool
+    public function restore(AuthUser $authUser, Bill $bill): bool
     {
         return $authUser->can('Restore:Bill');
     }
 
-    public function forceDelete(AuthUser $authUser): bool
+    public function forceDelete(AuthUser $authUser, Bill $bill): bool
     {
         return $authUser->can('ForceDelete:Bill');
     }
@@ -54,7 +57,7 @@ class BillPolicy
         return $authUser->can('RestoreAny:Bill');
     }
 
-    public function replicate(AuthUser $authUser): bool
+    public function replicate(AuthUser $authUser, Bill $bill): bool
     {
         return $authUser->can('Replicate:Bill');
     }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('job_orders', function (Blueprint $table) {
             $table->id();
             $table->string('job_order_number', 10);
-            $table->string('service_type');
+            $table->string('service_type')->default('job order');
             $table->string('description')->nullable();
             $table->date('date_requested')->nullable();
             $table->date('date_started')->nullable();

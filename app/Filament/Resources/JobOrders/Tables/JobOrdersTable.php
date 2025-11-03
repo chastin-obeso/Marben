@@ -10,6 +10,7 @@ use GuzzleHttp\Promise\Create;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Actions\CreateAction;
+use Illuminate\Support\Facades\DB;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
@@ -17,6 +18,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\RichEditor;
 use App\Filament\Resources\Bills\BillResource;
 
 
@@ -79,33 +81,41 @@ class JobOrdersTable
                 ->icon('heroicon-o-plus')
                 ->button()
                 ->modalHeading(fn ($record) => 'Create Bill for ' . $record->job_order_number)
-                ->Schema([
-                    TextInput::make('total_amount')
-                        ->label('Total Amount')
-                        ->numeric()
-                        ->prefix('₱')
-                        ->required(),
+                ->schema(fn ($record) => (function () use ($record) {
+                    $totalFromParts = $record->parts()->sum(DB::raw('unit_price * quantity'));
 
-                    DatePicker::make('due_date')
-                        ->label('Due Date')
-                        ->required()
-                        ->default(now()),
+                    return [
+                        DatePicker::make('due_date')
+                            ->label('Due Date')
+                            ->required(),
 
-                    TextInput::make('particulars')
-                        ->label('Particulars')
-                        ->required(),
-                ])
+                        TextInput::make('total_amount')
+                            ->label('Total Amount')
+                            ->numeric()
+                            ->minValue(0)
+                            ->step(0.01)
+                            ->default($totalFromParts)
+                            ->disabled(),
+
+                        RichEditor::make('particulars')
+                            ->label('Particulars')
+                            ->nullable()
+                            ->toolbarButtons(['bold', 'italic', 'bulletList', 'orderedList']),
+                    ];
+                })())
                 ->action(function (array $data, $record) {
+                    $totalFromParts = $record->parts()->sum(DB::raw('unit_price * quantity'));
+
                     Bill::create([
-                        'job_order_id' => $record->id, // link to job order
-                        'total_amount' => $data['total_amount'],
-                        'amount_due'   => $data['total_amount'],
+                        'job_order_id' => $record->id,
+                        'total_amount' => $totalFromParts ?: ($data['total_amount'] ?? 0),
+                        'amount_due'   => $totalFromParts ?: ($data['amount_due'] ?? 0),
                         'due_date'     => $data['due_date'],
-                        'particulars'  => $data['particulars'],
+                        'particulars'  => $data['particulars'] ?? null,
                         'status'       => 'Unpaid',
                         'bill_date'    => now(),
                         'bill_series'  => JobOrdersTable::generateLastBillNumber()['bill_series'],
-                        'bill_number'  => JobOrdersTable::generateLastBillNumber()['bill_number']
+                        'bill_number'  => JobOrdersTable::generateLastBillNumber()['bill_number'],
                     ]);
 
                     Notification::make()

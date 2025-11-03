@@ -49,8 +49,7 @@ class JobOrderInfolist
                             ->date(),
                         TextEntry::make('date_finished')
                             ->date(),
-                        
-                    
+  
                 ]),
                 
             ]);

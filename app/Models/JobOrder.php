@@ -45,7 +45,7 @@ class JobOrder extends Model
     
     public function bills()
     {
-        return $this->hasMany(Bill::class, 'job_order_id');
+        return $this->hasMany(\App\Models\Bill::class);
     }
 
     public function user() 

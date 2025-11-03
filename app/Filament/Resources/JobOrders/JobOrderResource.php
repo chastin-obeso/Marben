@@ -60,6 +60,7 @@ class JobOrderResource extends Resource
             RelationGroup::make('Contacts',[
                 RelationManagers\PartsRelationManager::class,
                 RelationManagers\LogsRelationManager::class,
+                RelationManagers\BillsRelationManager::class,
             ]),
         ];
     }

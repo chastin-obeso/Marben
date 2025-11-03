@@ -7,6 +7,12 @@ use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use App\Filament\Resources\JobOrders\JobOrderResource;
+use App\Models\JobOrder;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Checkbox;
 
 class ViewJobOrder extends ViewRecord
 {
@@ -141,19 +147,72 @@ class ViewJobOrder extends ViewRecord
                 ->button()
                 ->label('Rejob')
                 ->color('danger')
-                ->action(function () {
-                    $this->record->status = 'In Progress';
-                    $this->record->save();
-                    $this->redirect(JobOrderResource::getUrl('view', ['record' => $this->record]));
+                ->modalHeading(fn () => 'Create Rejob from ' . $this->record->job_order_number)
+                ->form(fn () => [
+                    Select::make('customer_id')
+                        ->label('Customer')
+                        ->relationship('customer', 'name')
+                        ->default($this->record->customer_id)
+                        ->required(),
+                    Select::make('service_type_id')
+                        ->label('Service Type')
+                        ->relationship('serviceType', 'service')
+                        ->default($this->record->service_type_id ?? $this->record->service_type)
+                        ->required(),
+                    Select::make('user_id')
+                        ->label('Assigned To')
+                        ->relationship('user', 'name')
+                        ->default($this->record->user_id)
+                        ->required(),
+                    DatePicker::make('date_target')
+                        ->label('Target Date')
+                        ->default($this->record->date_target),
+                    RichEditor::make('description')
+                        ->label('Description')
+                        ->default($this->record->description),
+                    Checkbox::make('copy_parts')
+                        ->label('Copy parts from original')
+                        ->default(true),
+                ])
+                ->action(function (array $data) {
+                    $last = JobOrder::whereYear('date_requested', now()->year)->latest('series')->first();
+                    $series = $last?->series + 1;
+                    $jobNumber = 'JO#' . sprintf('%05d', $series);
+
+                    $new = JobOrder::create([
+                        'customer_id'      => $data['customer_id'],
+                        'service_type_id'  => $data['service_type_id'] ?? null,
+                        'user_id'          => $data['user_id'],
+                        'date_target'      => $data['date_target'] ?? now(),
+                        'description'      => $data['description'] ?? null,
+                        'status'           => 'Scheduled',
+                        'date_requested'   => now(),
+                        'series'           => $series,
+                        'job_order_number' => $jobNumber,
+                    ]);
+
+                    if (!empty($data['copy_parts'])) {
+                        foreach ($this->record->parts as $part) {
+                            $new->parts()->create($part->only(['name','unit_price','quantity','total_price','status']));
+                        }
+                    }
+
                     $this->record->logs()->create([
-                        'details' => 'Rejob Initiated',
+                        'details' => 'Rejob created: ' . $new->job_order_number,
                         'date' => now(),
                     ]);
+                    $new->logs()->create([
+                        'details' => 'Created by rejob from ' . $this->record->job_order_number,
+                        'date' => now(),
+                    ]);
+
                     Notification::make()
-                        ->title('Job Order resumed!')
+                        ->title('New Job Order created: ' . $new->job_order_number)
                         ->success()
                         ->send();
-                }),  
+
+                    $this->redirect(JobOrderResource::getUrl('view', ['record' => $new]));
+                }),
         ];
     }
 }
