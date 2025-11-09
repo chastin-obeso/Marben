@@ -11,6 +11,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Actions\CreateAction;
 use Illuminate\Support\Facades\DB;
+use Filament\Tables\Filters\Filter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
@@ -19,6 +20,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Filters\SelectFilter;
 use App\Filament\Resources\Bills\BillResource;
 
 
@@ -31,15 +33,18 @@ class JobOrdersTable
                 TextColumn::make('job_order_number')
                     ->label('Job Order #')
                     ->toggleable()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('serviceType.service')
                     ->label('Service')
                     ->toggleable()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('customer.name')
                     ->label('Customer')
                     ->toggleable()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('description')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -51,14 +56,14 @@ class JobOrdersTable
                 TextColumn::make('date_started')
                     ->date()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->searchable(),
-                    //->sortable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('date_target')
                     ->label('Target Date')
                     ->date()
                     ->toggleable()
-                    ->searchable(),
-                    //->sortable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('date_finished')
                     ->date()
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -66,10 +71,29 @@ class JobOrdersTable
                     ->sortable(),
                 TextColumn::make('status')
                     ->toggleable()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Scheduled' => 'Scheduled',
+                        'In Progress' => 'In Progress',
+                        'Completed' => 'Completed',
+                        'Closed' => 'Closed',
+                        'Cancelled' => 'Cancelled',
+                    ]),
+                SelectFilter::make('service_type')
+                    ->label('Service Type')
+                    ->relationship('serviceType', 'service'),
+                Filter::make('Delayed')
+                        ->label('Delayed')
+                        ->query(fn ($query) =>
+                            $query
+                                ->whereDate('date_target', '<', now()->toDateString())
+                                ->whereNotIn('status', ['Completed', 'Closed'])
+                        ),
             ])
             ->recordActions([
                 ViewAction::make()
@@ -128,6 +152,9 @@ class JobOrdersTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
+            ])
+            ->recordClasses(fn ($record) => [
+                'bg-red-100' => now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed'
             ]);
     }
 
