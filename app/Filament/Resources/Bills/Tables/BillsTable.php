@@ -30,10 +30,12 @@ class BillsTable
                     ->color(
                         fn ($record) => $record->deleted_at ? 'danger' : 'success'
                     )
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('JobOrder.job_order_number')
                     ->label('Job Order #')
                     ->toggleable()
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('JobOrder.customer.name')
                     ->label('Customer')
