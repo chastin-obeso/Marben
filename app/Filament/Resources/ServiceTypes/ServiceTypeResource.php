@@ -2,18 +2,21 @@
 
 namespace App\Filament\Resources\ServiceTypes;
 
-use App\Filament\Resources\ServiceTypes\Pages\CreateServiceType;
+use UnitEnum;
+use BackedEnum;
+use Filament\Tables\Table;
+use App\Models\ServiceType;
+use Filament\Schemas\Schema;
+use Filament\Resources\Resource;
+use Filament\Support\Icons\Heroicon;
 use App\Filament\Resources\ServiceTypes\Pages\EditServiceType;
+use App\Filament\Resources\ServiceTypes\Pages\ViewServiceType;
 use App\Filament\Resources\ServiceTypes\Pages\ListServiceTypes;
+use App\Filament\Resources\ServiceTypes\Pages\CreateServiceType;
 use App\Filament\Resources\ServiceTypes\Schemas\ServiceTypeForm;
 use App\Filament\Resources\ServiceTypes\Tables\ServiceTypesTable;
-use App\Models\ServiceType;
-use BackedEnum;
-use UnitEnum;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
+use App\Filament\Resources\ServiceTypes\Schemas\ServiceTypeInfolist;
+use App\Filament\Resources\ServiceTypes\RelationManagers\JobOrdersRelationManager;
 
 class ServiceTypeResource extends Resource
 {
@@ -29,6 +32,11 @@ class ServiceTypeResource extends Resource
         return ServiceTypeForm::configure($schema);
     }
 
+    public static function infolist(Schema $schema): Schema
+    {
+        return ServiceTypeInfolist::configure($schema);
+    }       
+
     public static function table(Table $table): Table
     {
         return ServiceTypesTable::configure($table);
@@ -37,7 +45,7 @@ class ServiceTypeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            JobOrdersRelationManager::class,
         ];
     }
 
@@ -47,6 +55,7 @@ class ServiceTypeResource extends Resource
             'index' => ListServiceTypes::route('/'),
             // 'create' => CreateServiceType::route('/create'),
             'edit' => EditServiceType::route('/{record}/edit'),
+            'view' => ViewServiceType::route('/{record}'),
         ];
     }
 }
