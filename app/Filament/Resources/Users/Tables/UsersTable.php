@@ -5,13 +5,15 @@ namespace App\Filament\Resources\Users\Tables;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Support\Icons\Heroicon;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Radio;
+use Filament\Support\Icons\Heroicon;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
+    use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\SelectFilter;
 
 class UsersTable
 {
@@ -64,7 +66,12 @@ class UsersTable
                             ])
                             ->default(''),
                     ])
-                    ->query(fn ($query, array $data) => isset($data['status']) && $data['status'] !== '' ? $query->where('status', (bool) $data['status']) : $query),
+                    ->query(fn ($query, array $data) => 
+                    isset($data['status']) && $data['status'] !== '' ? 
+                    $query->where('status', (bool) $data['status']) : $query),
+                SelectFilter::make('service_type')
+                    ->label('Service Type')
+                    ->relationship('serviceTypes', 'service'),
             ])
             ->recordActions([
                 ViewAction::make(),
