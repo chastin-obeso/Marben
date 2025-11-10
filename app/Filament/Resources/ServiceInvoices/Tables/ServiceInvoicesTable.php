@@ -8,12 +8,13 @@ use App\Models\ServiceInvoice;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Actions\BulkActionGroup;
+use Filament\Schemas\Components\View;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Schemas\Components\View;
 
 class ServiceInvoicesTable
 {
@@ -54,7 +55,12 @@ class ServiceInvoicesTable
                     ->sortable(),
             ])
             ->filters([
-                TrashedFilter::make(),
+                    SelectFilter::make('payment_type')
+                    ->label('Payment Type')
+                    ->options([
+                        'Cash' => 'Cash',
+                        'GCash' => 'GCash',
+                    ]),
             ])
             ->recordActions([
                 ViewAction::make()
