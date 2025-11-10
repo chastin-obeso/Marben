@@ -167,11 +167,11 @@ class BillsTable
                 //     }),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                ]),
+                // BulkActionGroup::make([
+                //     DeleteBulkAction::make(),
+                //     ForceDeleteBulkAction::make(),
+                //     RestoreBulkAction::make(),
+                // ]),
             ])
             ->recordClasses(fn ($record) => [
                 'bg-red-100' => now()->toDateString() > $record->due_date && $record->status !== 'Fully Paid'
