@@ -2,24 +2,28 @@
 
 namespace App\Filament\Resources\Bills\Schemas;
 
+use components;
 use App\Models\Bill;
 use Filament\Actions;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
+use function Livewire\after;
 use App\Models\ServiceInvoice;
 use GuzzleHttp\Promise\Create;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
+use Illuminate\Support\Facades\Redirect;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use App\Filament\Resources\Bills\Tables\BillsTable;
-use function Livewire\after;
 
 class BillInfolist
 {
+    protected array $listeners = ['refresh-data' => '$refresh'];
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -85,10 +89,17 @@ class BillInfolist
                                             }
                                     $invoice->bill->updatePaymentStatus(false); 
                                     
+                                    Notification::make()
+                                        ->title('Bill Paid Successfully')
+                                        ->success()
+                                        ->send();
+                                    return Redirect::to(route('filament.admin.resources.bills.index'));
                                 }
                             
                             )
                             ->closeModalByClickingAway(false)
+
+                           
                         ]
                     )
                     ->columnSpanFull()
