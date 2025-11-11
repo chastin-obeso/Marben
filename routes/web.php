@@ -5,12 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
-        return redirect()->route('filament.admin.pages.dashboard');
-})->name('login');
+        return view('welcome');
+})->name('welcome');
 
-// Route::get('/login', function () {
-//     return view('login');
-// })->name('login');
+Route::get('/login', function () {
+    return redirect()->route('filament.admin.pages.dashboard');
+})->name('login');
 
 Route::get('/home', function () {
     return view('dashboard');
