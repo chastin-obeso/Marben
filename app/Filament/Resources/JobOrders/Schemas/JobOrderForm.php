@@ -41,12 +41,24 @@ class JobOrderForm
                     ->createOptionForm([
                         TextInput::make('name')->required(),
                         TextInput::make('email')->unique()->required()->email(),
-                        TextInput::make('phone'),
+                        TextInput::make('phone')
+                            ->label('Phone number (09XXXXXXXXX)')
+                            ->tel()
+                            ->regex('/^09[0-9]{9}$/')
+                            ->validationMessages([
+                                'regex' => 'The phone number must start with 09 and be exactly 11 digits long.',
+                            ]),
                     ])
                     ->editOptionForm([
                         TextInput::make('name')->required(),
                         TextInput::make('email')->unique()->required()->email(),
-                        TextInput::make('phone'),
+                        TextInput::make('phone')
+                            ->label('Phone number (09XXXXXXXXX)')
+                            ->tel()
+                            ->regex('/^09[0-9]{9}$/')
+                            ->validationMessages([
+                                'regex' => 'The phone number must start with 09 and be exactly 11 digits long.',
+                        ]),
                     ])
                     ->createOptionAction(function(Action $action) {
                         $action->modalWidth('md')
