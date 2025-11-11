@@ -149,6 +149,18 @@ class ViewJobOrder extends ViewRecord
                 }),  
             Action::make('rejob')
                 ->visible(fn () => $this->record->status === 'Closed')
+                ->disabled(function (Model $record) {
+                    if ($record->re_job_order_id) {
+                        return true;
+                    }
+                    return false;
+                })
+                ->tooltip(function () {
+                    if ($this->record->re_job_order_id) {
+                        return 'Rejob already created for this job order.';
+                    }
+                    return 'Create a rejob from this job order.';
+                })
                 ->button()
                 ->label('Rejob')
                 ->color('danger')
@@ -202,6 +214,11 @@ class ViewJobOrder extends ViewRecord
                         }
                     }
 
+                    $this->record->update([
+                        're_job_order_id' => $new->id,
+                    ]);
+
+
                     $this->record->logs()->create([
                         'details' => 'Rejob created: ' . $new->job_order_number,
                         'date' => now(),
@@ -217,6 +234,8 @@ class ViewJobOrder extends ViewRecord
                         ->send();
 
                     $this->redirect(JobOrderResource::getUrl('view', ['record' => $new]));
+
+                    
                 }),
         ];
     }

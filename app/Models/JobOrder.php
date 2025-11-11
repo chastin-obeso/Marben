@@ -20,7 +20,8 @@ class JobOrder extends Model
         'customer_id',
         'user_id',
         'series',
-        'service_type_id'
+        'service_type_id',
+        're_job_order_id',
     ];
     public $timestamps = false;
 
@@ -52,6 +53,12 @@ class JobOrder extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function reJobOrder()
+    {
+        return $this->belongsTo(JobOrder::class, 're_job_order_id');
+    }
+
     public function scopeDateBetween(Builder $query, array $date)
     {
         $query->whereBetween('date_requested', [$date]);
