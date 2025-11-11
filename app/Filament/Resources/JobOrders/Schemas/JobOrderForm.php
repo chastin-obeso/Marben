@@ -75,7 +75,8 @@ class JobOrderForm
                     ->schema([
                         DatePicker::make('date_target')
                             ->label('Target Date')
-                            ->required(),
+                            ->required()
+                            ->minDate(now()),
                         Select::make('service_type_id')
                             ->relationship('serviceType', 'service')
                             ->searchable()
