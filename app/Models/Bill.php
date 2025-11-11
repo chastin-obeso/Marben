@@ -70,8 +70,6 @@ class Bill extends Model
             $newStatus = 'Fully Paid';
         } elseif ($this->serviceInvoices()->exists()) {
             $newStatus = 'Partially Paid';
-        } elseif ($this->due_date && now()->isAfter($this->due_date)) {
-            $newStatus = 'Overdue';
         }
 
         if ($this->status !== $newStatus) {

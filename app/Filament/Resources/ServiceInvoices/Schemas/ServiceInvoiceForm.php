@@ -45,6 +45,10 @@ class ServiceInvoiceForm
                     ->searchable()
                     ->preload()
                     ->reactive()
+                    ->afterStateHydrated(function ($state, callable $set) {
+                        $bill = Bill::find($state);
+                        $set('bill.amount_due', $bill?->amount_due ?? 0);
+                    })
                     ->afterStateUpdated(function ($state, callable $set) {
                         $bill = Bill::find($state);
                         $set('bill.amount_due', $bill?->amount_due ?? 0);

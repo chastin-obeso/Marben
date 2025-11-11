@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\JobOrders\Schemas;
 
+use Dom\Text;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -16,14 +17,18 @@ class JobOrderInfolist
                 Section::make('Basic Information')
                     ->description('Basic information about the job order.')
                     ->columnSpanFull()
-                    ->columns(4)
+                    ->columns(5)
                     ->components([
-                        TextEntry::make('job_order_number'),
+                        TextEntry::make('job_order_number')
+                            ->label('Job Order Number'),
                         TextEntry::make('ServiceType.service')
                             ->label('Service Type'),
                         TextEntry::make('customer.name')
                             ->label('Customer'),
                         TextEntry::make('status'),
+                        TextEntry::make('reJobOrder.job_order_number')
+                            ->label('Re-Job Order Number'),
+                            
                 ]),
                 Section::make('Description')
                     ->collapsible()

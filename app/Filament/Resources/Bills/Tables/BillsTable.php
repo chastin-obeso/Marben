@@ -9,12 +9,14 @@ use Filament\Actions\Action;
 use App\Models\ServiceInvoice;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Filters\Filter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Actions\ForceDeleteBulkAction;
 
@@ -30,10 +32,12 @@ class BillsTable
                     ->color(
                         fn ($record) => $record->deleted_at ? 'danger' : 'success'
                     )
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('JobOrder.job_order_number')
                     ->label('Job Order #')
                     ->toggleable()
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('JobOrder.customer.name')
                     ->label('Customer')
@@ -64,6 +68,20 @@ class BillsTable
             ])
             ->filters([
                 TrashedFilter::make(),
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Partially Paid' => 'Partially Paid',
+                        'Fully Paid' => 'Fully Paid',
+                        'Overdue' => 'Overdue',
+                    ]),
+                Filter::make('Overdue')
+                        ->label('Overdue Bills')
+                        ->query(fn ($query) =>
+                            $query
+                                ->whereDate('due_date', '<', now()->toDateString())
+                                ->whereNotIn('status', ['Fully Paid'])
+                        ),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -149,12 +167,15 @@ class BillsTable
                 //     }),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                ]),
-            ]);
+                // BulkActionGroup::make([
+                //     DeleteBulkAction::make(),
+                //     ForceDeleteBulkAction::make(),
+                //     RestoreBulkAction::make(),
+                // ]),
+            ])
+            ->recordClasses(fn ($record) => [
+                'bg-red-100' => now()->toDateString() > $record->due_date && $record->status !== 'Fully Paid'
+            ]);;
     }
 
     public static function generateLastServiceInvoiceNumber(): array

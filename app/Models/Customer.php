@@ -9,4 +9,9 @@ class Customer extends Model
     protected $table = 'customers';
     protected $fillable = ['name', 'email', 'phone'];
     public $timestamps = false;
+
+    public function getNameAndEmailAttribute(): string
+    {
+        return "{$this->name} ({$this->email})";
+    }
 }
