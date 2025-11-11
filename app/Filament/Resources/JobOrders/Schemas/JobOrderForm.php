@@ -2,19 +2,20 @@
 
 namespace App\Filament\Resources\JobOrders\Schemas;
 
+use App\Models\User;
 use App\Models\Customer;
 use App\Models\JobOrder;
-use App\Models\User;
 use Filament\Actions\Action;
-use Filament\Forms\Components\CheckboxList;
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Schema;
 
 class JobOrderForm
 {
@@ -24,16 +25,27 @@ class JobOrderForm
             ->components([
                 Select::make('customer_id')
                     ->relationship('customer', 'name')
+                    ->getOptionLabelFromRecordUsing(function (Model $record): string {
+                        return "{$record->name} ({$record->email})";
+                    })
                     ->searchable()
+                    ->getSearchResultsUsing(function (string $search): array {
+                        return Customer::where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->get()
+                            ->mapWithKeys(fn ($record) => [$record->id => "{$record->name} ({$record->email})"])
+                            ->toArray();
+                    })
                     ->preload()
+           
                     ->createOptionForm([
-                        TextInput::make('name'),
-                        TextInput::make('email'),
+                        TextInput::make('name')->required(),
+                        TextInput::make('email')->unique()->required()->email(),
                         TextInput::make('phone'),
                     ])
                     ->editOptionForm([
-                        TextInput::make('name'),
-                        TextInput::make('email'),
+                        TextInput::make('name')->required(),
+                        TextInput::make('email')->unique()->required()->email(),
                         TextInput::make('phone'),
                     ])
                     ->createOptionAction(function(Action $action) {
