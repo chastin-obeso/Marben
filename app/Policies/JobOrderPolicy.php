@@ -14,7 +14,7 @@ class JobOrderPolicy
     
     public function viewAny(AuthUser $authUser): bool
     {
-        return $authUser->can('ViewAny:JobOrder');
+        return $authUser->can('ViewAny:JobOrder') || $authUser->can('ViewAssigned:JobOrder');
     }
 
     public function view(AuthUser $authUser, JobOrder $jobOrder): bool
@@ -65,6 +65,11 @@ class JobOrderPolicy
     public function reorder(AuthUser $authUser): bool
     {
         return $authUser->can('Reorder:JobOrder');
+    }
+
+    public function viewAssigned(AuthUser $authUser, JobOrder $jobOrder): bool
+    {
+        return $authUser->can('ViewAssigned:JobOrder');
     }
 
 }

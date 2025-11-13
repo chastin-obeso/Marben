@@ -13,6 +13,7 @@ use Filament\Actions\ViewAction;
 use Filament\Actions\CreateAction;
 use Illuminate\Support\Facades\DB;
 use Filament\Tables\Filters\Filter;
+use Illuminate\Support\Facades\Auth;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
@@ -24,6 +25,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\Bills\BillResource;
 use Filament\Schemas\Components\Utilities\Set;
 

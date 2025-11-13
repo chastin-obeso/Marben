@@ -1,5 +1,7 @@
 <?php
 
+use App\Filament\Resources\JobOrders\JobOrderResource;
+
 return [
 
     /*
@@ -165,6 +167,14 @@ return [
         'manage' => [
             \BezhanSalleh\FilamentShield\Resources\Roles\RoleResource::class => [
                 'viewAny',
+                'view',
+                'create',
+                'update',
+                'delete',
+            ],
+            JobOrderResource::class => [
+                'viewAny',
+                'viewAssigned',
                 'view',
                 'create',
                 'update',
