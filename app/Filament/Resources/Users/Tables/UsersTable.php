@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Models\User;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -35,6 +36,27 @@ class UsersTable
                     ->searchable(),
                 ToggleColumn::make('status')
                     ->label('Active')
+                    ->onColor(function(User $user) {
+                        if (auth()->user()->id === $user->id) {
+                            return 'gray';
+                        }
+                    })
+                    ->offColor(function(User $user) {
+                        if (auth()->user()->id === $user->id) {
+                            return 'gray';
+                        }
+                    })
+                    ->disabled(function (User $user) {
+                        if (auth()->user()->id === $user->id) {
+                            return true;
+                        }
+                        return false;
+                    })
+                    ->tooltip(function(User $user){
+                        if(auth()->user()->id === $user->id){
+                            return 'Cannot toggle own status!';
+                        }
+                    })
                     ->onIcon('heroicon-o-check')
                     ->offIcon('heroicon-o-x-mark')
                     ->searchable(),

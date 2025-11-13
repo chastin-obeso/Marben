@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 use Guava\Calendar\Enums\Context;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Auth;
 use Guava\Calendar\ValueObjects\FetchInfo;
 use Guava\Calendar\Filament\CalendarWidget;
 use Guava\Calendar\Contracts\ContextualInfo;
@@ -72,8 +73,14 @@ class Calendar extends CalendarWidget
             end: $info->end->toDateString()
         );
         
-        $data = JobOrder::whereBetween('date_requested', [$info->start->toDateString(), $info->end->toDateString()])
-                ->get();
+        $user = Auth::user();
+                if ($user && $user->can('ViewAssigned:JobOrder') && !$user->can('ViewAny:JobOrder')) {
+                    $query = JobOrder::query()->where('user_id', $user->id);
+                }else{
+                    $query = JobOrder::query();
+                }
+
+        $data = $query->get();
         
         return $data
                 ->map(fn (JobOrder $job) => CalendarEvent::make($job)
