@@ -19,4 +19,14 @@ class JobOrderPart extends Model
 
     
     public $timestamps = false;
+
+    public function jobOrder()
+    {
+        return $this->belongsTo(JobOrder::class);
+    }
+
+    public function bill()
+    {
+        return $this->hasMany(Bill::class);
+    }
 }

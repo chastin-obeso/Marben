@@ -63,4 +63,9 @@ class JobOrder extends Model
     {
         $query->whereBetween('date_requested', [$date]);
     }
+
+    public function unbilledJobOrderParts()
+    {
+        return $this->parts()->whereNull('bill_id');
+    }
 }

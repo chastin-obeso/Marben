@@ -19,7 +19,6 @@ class Bill extends Model
         'amount_due',
         'bill_date',
         'due_date',
-        'particulars',
         'status',
         'job_order_id'
     ];
@@ -50,6 +49,11 @@ class Bill extends Model
     public function jobOrder()
     {
         return $this->belongsTo(JobOrder::class);
+    }
+
+    public function jobOrderParts()
+    {
+        return $this->hasMany(JobOrderPart::class);
     }
 
     public function serviceInvoices()
