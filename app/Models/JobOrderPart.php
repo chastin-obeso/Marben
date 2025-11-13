@@ -13,7 +13,6 @@ class JobOrderPart extends Model
         'unit_price',
         'quantity',
         'total_price',
-        'status',
         'job_order_id',
     ];
 

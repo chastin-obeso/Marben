@@ -70,4 +70,6 @@ class JobOrder extends Model
     {
         return $this->parts()->whereNull('bill_id');
     }
+
+    
 }

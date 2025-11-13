@@ -27,7 +27,7 @@ class BillForm
             ->components([
                 TextInput::make('total_amount')
                     ->label('Total Amount')
-                    ->disabled()
+                    ->readOnly()
                     ->required()
                     ->numeric()
                     ->minValue(0)
@@ -48,10 +48,19 @@ class BillForm
                         if ($state) {
                             // 1. Fetch the unbilled parts using the model method
                             $parts = JobOrder::find($state)?->unbilledJobOrderParts;
-                            
+                            $parts_array = $parts->toArray();
+                            if(JobOrder::find($state)?->service_fee_status == 'Unbilled'){
+                                $service_fee = JobOrder::find($state)?->service_fee;
+                                $parts_array[] = [
+                                    'name' => 'Service Fee',
+                                    'unit_price' => 'N/A',
+                                    'quantity' => 'N/A',
+                                    'total_price' => $service_fee,
+                                ];
+                            }
                             // 2. Convert to an array and store this array in the form's data state
-                            $set('parts_data', $parts->toArray());
-                            $set('total_amount', $parts->sum('total_price'));
+                            $set('parts_data', $parts_array);
+                            $set('total_amount', collect($parts_array)->sum('total_price'));
                         } else {
                             $set('parts_data', []);
                         }

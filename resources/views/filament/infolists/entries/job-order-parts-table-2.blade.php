@@ -1,9 +1,6 @@
 
 
-@php
-    // Get the array of data stored in the 'parts_data' field state
-    $parts = $getState() ?? [];
-@endphp
+
 
 <div class="overflow-x-auto rounded-lg border border-gray-200">
     <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -17,7 +14,7 @@
         </thead>
         <tbody class="divide-y divide-gray-100">
 
-                @forelse ($parts as $part)
+                @forelse ($getRecord()->unbilledJobOrderParts as $part)
                 @if ($part['quantity']!='N/A')
                     <tr>
                     <td class="px-4 py-2">{{ $part['name'] }}</td>

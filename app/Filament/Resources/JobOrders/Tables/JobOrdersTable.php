@@ -4,6 +4,7 @@ namespace App\Filament\Resources\JobOrders\Tables;
 
 use components;
 use App\Models\Bill;
+use App\Models\JobOrder;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use GuzzleHttp\Promise\Create;
@@ -17,11 +18,14 @@ use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Filters\SelectFilter;
 use App\Filament\Resources\Bills\BillResource;
+use Filament\Schemas\Components\Utilities\Set;
 
 
 class JobOrdersTable
@@ -103,53 +107,96 @@ class JobOrdersTable
                 ->label('Open Job Order')
                 ->button()
                 ->icon('heroicon-o-eye'),
-                Action::make('createBill')
+                CreateAction::make('create_bill')
+                ->modalHeading(function ($record) {
+                    return 'Add a New Bill Record for ' . $record->job_order_number;
+                })
+                ->button()
+                ->schema([
+                    TextInput::make('total_amount')
+                    ->label('Total Amount')
+                    ->readOnly()
+                    ->required()
+                    ->numeric()
+                    ->minValue(0)
+                    ->prefix('₱'),
+                DatePicker::make('due_date')
+                    ->label('Due Date')
+                    ->required()
+                    ->default(now())
+                    ->minDate(now()),
+                Select::make('job_order_id')
+                    ->label('Job Order')
+                    ->dehydrated()
+                    ->default(fn ($record) => $record->job_order_number)
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->live()
+                    ->afterStateHydrated(function ($record, Set $set) {
+                        if ($record) {
+                            // 1. Fetch the unbilled parts using the model method
+                            $parts = JobOrder::find($record->id)?->unbilledJobOrderParts;
+                            $parts_array = $parts->toArray();
+                            if(JobOrder::find($record->id)?->service_fee_status == 'Unbilled'){
+                                $service_fee = JobOrder::find($record->id)?->service_fee;
+                                $parts_array[] = [
+                                    'name' => 'Service Fee',
+                                    'unit_price' => 'N/A',
+                                    'quantity' => 'N/A',
+                                    'total_price' => $service_fee,
+                                ];
+                            }
+                            // 2. Convert to an array and store this array in the form's data state
+                            $set('parts_data', $parts_array);
+                            $set('total_amount', collect($parts_array)->sum('total_price'));
+                        } else {
+                            $set('parts_data', []);
+                        }
+                    }),
+                Section::make('Particulars of Unbilled Job Order Parts')
+                    ->columnSpanFull()
+                    ->components([
+                        ViewField::make('parts_data')
+                        ->live()
+                        ->view('filament.infolists.entries.job-order-parts-table-2'),
+                    ]),
+                ])
                 ->label('Create Bill')
                 ->icon('heroicon-o-plus')
-                ->button()
-                ->modalHeading(fn ($record) => 'Create Bill for ' . $record->job_order_number)
-                ->schema(fn ($record) => (function () use ($record) {
-                    $totalFromParts = $record->parts()->sum(DB::raw('unit_price * quantity'));
-
-                    return [
-                        DatePicker::make('due_date')
-                            ->label('Due Date')
-                            ->required(),
-
-                        TextInput::make('total_amount')
-                            ->label('Total Amount')
-                            ->numeric()
-                            ->minValue(0)
-                            ->step(0.01)
-                            ->default($totalFromParts)
-                            ->disabled(),
-
-                        RichEditor::make('particulars')
-                            ->label('Particulars')
-                            ->nullable()
-                            ->toolbarButtons(['bold', 'italic', 'bulletList', 'orderedList']),
-                    ];
-                })())
-                ->action(function (array $data, $record) {
-                    $totalFromParts = $record->parts()->sum(DB::raw('unit_price * quantity'));
-
-                    Bill::create([
-                        'job_order_id' => $record->id,
-                        'total_amount' => $totalFromParts ?: ($data['total_amount'] ?? 0),
-                        'amount_due'   => $totalFromParts ?: ($data['amount_due'] ?? 0),
-                        'due_date'     => $data['due_date'],
-                        'particulars'  => $data['particulars'] ?? null,
-                        'status'       => 'Unpaid',
-                        'bill_date'    => now(),
-                        'bill_series'  => JobOrdersTable::generateLastBillNumber()['bill_series'],
-                        'bill_number'  => JobOrdersTable::generateLastBillNumber()['bill_number'],
-                    ]);
-
+                ->color('primary')
+                ->modalHeading('Add a New Bill Record')
+                ->mutateDataUsing(function(array $data, $record) {
+                    $data['status'] = 'Unpaid';
+                    $data['amount_due'] = $data['total_amount'];
+                    $data['bill_date'] = now();
+                    $data['job_order_id'] = $record->id;
+                    return array_merge($data, $this->generateLastBillNumber());
+                })
+                ->action(function(array $data) {
                     Notification::make()
-                        ->title('Bill created successfully!')
+                        ->title('Bill Created Successfully')
                         ->success()
                         ->send();
-                }),
+                })
+                ->after(function ($record, array $data) {
+                        $jobOrderId = $data['job_order_id'];
+        
+                        // 1. Update the parent Job Order status
+                        $jobOrder = JobOrder::find($jobOrderId);
+                        if ($jobOrder) {
+                            if ($jobOrder->service_fee_status == 'Unbilled') {
+                                $jobOrder->service_fee_status = 'Billed';
+                            }
+                            $jobOrder->save();
+                        }
+
+                        // 2. Mark the individual unbilled Job Order Parts with the new Bill's ID
+                        JobOrder::find($jobOrderId)
+                            ->unbilledJobOrderParts()
+                            ->update(['bill_id' => $record->id]);
+                            })
+                ->closeModalByClickingAway(false),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

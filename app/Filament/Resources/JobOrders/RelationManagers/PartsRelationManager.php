@@ -78,7 +78,17 @@ class PartsRelationManager extends RelationManager
                 TextColumn::make('unit_price')->label('Unit Price')->money('php', true)->sortable(),
                 TextColumn::make('quantity')->label('Quantity')->sortable(),
                 TextColumn::make('total_price')->label('Total Price')->money('php', true)->sortable(),
-                TextColumn::make('status')->label('Status')->sortable(),
+                TextColumn::make('job_order_id')
+                ->label('Status')
+                ->formatStateUsing(function ($record) {
+                    if($record->bill_id !== null) {
+                        return 'Billed';
+                    } 
+                    else 
+                    {
+                        return 'Unbilled';
+                    }
+                }),
             ])
             ->filters([
                 //
