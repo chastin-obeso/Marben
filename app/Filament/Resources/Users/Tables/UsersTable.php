@@ -9,11 +9,12 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Radio;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Auth;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\TextColumn;
     use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 
 class UsersTable
@@ -35,6 +36,7 @@ class UsersTable
                 TextColumn::make('username')
                     ->searchable(),
                 ToggleColumn::make('status')
+                    ->visible(Auth::user()->can('ChangeStatus:User'))
                     ->label('Active')
                     ->onColor(function(User $user) {
                         if (auth()->user()->id === $user->id) {

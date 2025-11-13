@@ -64,4 +64,14 @@ class UserPolicy
         return $authUser->can('Reorder:User');
     }
 
+    public function assign(AuthUser $authUser): bool
+    {
+        return $authUser->can('Assign:User');
+    }
+
+    public function changeStatus(AuthUser $authUser): bool
+    {
+        return $authUser->can('ChangeStatus:User');
+    }
+
 }

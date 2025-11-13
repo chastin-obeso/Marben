@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Resources\Users\UserResource;
 use App\Filament\Resources\JobOrders\JobOrderResource;
 
 return [
@@ -180,6 +181,15 @@ return [
                 'update',
                 'delete',
             ],
+            UserResource::class => [
+                'viewAny',
+                'view',
+                'create',
+                'update',
+                'delete',
+                'assign',
+                'changeStatus',
+            ]
         ],
         'exclude' => [
             //
