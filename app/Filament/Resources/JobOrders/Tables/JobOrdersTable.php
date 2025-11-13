@@ -34,6 +34,9 @@ class JobOrdersTable
                     ->label('Job Order #')
                     ->toggleable()
                     ->searchable()
+                    ->color(
+                        fn ($record) => now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed' ? 'danger' : 'success'
+                    )
                     ->sortable(),
                 TextColumn::make('serviceType.service')
                     ->label('Service')
@@ -154,7 +157,7 @@ class JobOrdersTable
                 ]),
             ])
             ->recordClasses(fn ($record) => [
-                'bg-red-100' => now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed'
+                'bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800' => now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed'
             ]);
     }
 
