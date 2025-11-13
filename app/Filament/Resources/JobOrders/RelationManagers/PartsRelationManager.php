@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\JobOrders\RelationManagers;
 
+
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
@@ -32,7 +33,7 @@ class PartsRelationManager extends RelationManager
                     ->required(),
                 TextInput::make('unit_price')
                     ->label('Unit Price')
-                    ->reactive()
+                    ->live(debounce: 500)
                     ->afterStateUpdated(fn (Get $get, Set $set) =>
                         $set('total_price', $get('unit_price') * $get('quantity'))
                     )
@@ -42,7 +43,7 @@ class PartsRelationManager extends RelationManager
                     ->required(),
                 TextInput::make('quantity')
                     ->label('Quantity')
-                    ->reactive()
+                    ->live(debounce: 500)
                     ->afterStateUpdated(fn (Get $get, Set $set) =>
                         $set('total_price', $get('unit_price') * $get('quantity'))
                     )
@@ -57,14 +58,14 @@ class PartsRelationManager extends RelationManager
                         ->minValue(0)
                         ->rule('decimal:0,2')
                     ->required(),
-                Select::make('status')
-                    ->label('Status')
-                    ->options([
-                        'Pending' => 'Pending',
-                        'In Progress' => 'In Progress',
-                        'Completed' => 'Completed',
-                        'Cancelled' => 'Cancelled',
-                    ]),
+                // Select::make('status')
+                //     ->label('Status')
+                //     ->options([
+                //         'Pending' => 'Pending',
+                //         'In Progress' => 'In Progress',
+                //         'Completed' => 'Completed',
+                //         'Cancelled' => 'Cancelled',
+                //     ]),
             ]);
     }
 
