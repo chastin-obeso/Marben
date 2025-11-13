@@ -56,7 +56,17 @@ class JobOrderInfolist
                             ->date(),
   
                 ]),
-                
+                Section::make('Service Fee Information')
+                    ->description('Details about the service fee.')
+                    ->columnSpanFull()
+                    ->columns(2)
+                    ->components([
+                        TextEntry::make('service_fee')
+                            ->label('Service Fee')
+                            ->prefix('₱'),
+                        TextEntry::make('service_fee_status')
+                            ->label('Service Fee Status'),
+                ]),
             ]);
     }
 }

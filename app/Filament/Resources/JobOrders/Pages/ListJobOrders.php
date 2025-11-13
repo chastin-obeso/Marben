@@ -25,6 +25,7 @@ class ListJobOrders extends ListRecords
                 ->mutateDataUsing(function($data) {
                     $data['status'] = 'Scheduled';
                     $data['date_requested'] = now();
+                    $data['service_fee_status'] = 'Unbilled';
                     return array_merge($data, $this->generateLastJobOrderNumber());
                 })
                 ->closeModalByClickingAway(false),

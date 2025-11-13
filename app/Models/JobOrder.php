@@ -22,6 +22,8 @@ class JobOrder extends Model
         'series',
         'service_type_id',
         're_job_order_id',
+        'service_fee',
+        'service_fee_status'
     ];
     public $timestamps = false;
 

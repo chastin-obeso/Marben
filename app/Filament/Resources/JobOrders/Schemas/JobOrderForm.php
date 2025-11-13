@@ -5,6 +5,7 @@ namespace App\Filament\Resources\JobOrders\Schemas;
 use App\Models\User;
 use App\Models\Customer;
 use App\Models\JobOrder;
+use Dom\Text;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
@@ -104,6 +105,13 @@ class JobOrderForm
                         'class' => 'shadow-lg'
                     ])
                     ->columns(2),
+                TextInput::make('service_fee')
+                    ->columnSpanFull()
+                    ->label('Service Fee')
+                    ->required()
+                    ->numeric()
+                    ->prefix('₱')
+                    ->placeholder('Input service fee'),
             ]);
 
             
