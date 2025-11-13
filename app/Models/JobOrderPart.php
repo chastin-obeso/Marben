@@ -16,5 +16,7 @@ class JobOrderPart extends Model
         'status',
         'job_order_id',
     ];
+
+    
     public $timestamps = false;
 }

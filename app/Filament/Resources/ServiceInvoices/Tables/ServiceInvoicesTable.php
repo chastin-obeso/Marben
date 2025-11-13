@@ -2,19 +2,24 @@
 
 namespace App\Filament\Resources\ServiceInvoices\Tables;
 
+use components;
+use App\Models\Bill;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use App\Models\ServiceInvoice;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\View;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Schemas\Components\Section;
 
 class ServiceInvoicesTable
 {
@@ -70,7 +75,72 @@ class ServiceInvoicesTable
                     : \App\Filament\Resources\ServiceInvoices\ServiceInvoiceResource::getUrl('index', ['activeRecord' => $record])
                 ),
                 EditAction::make()
-                    ->visible(fn (ServiceInvoice $record) => !$record->deleted_at),
+                    ->visible(fn (ServiceInvoice $record) => !$record->deleted_at)
+                    ->schema([
+                        Section::make()
+                        ->columns(2)
+                        ->schema([
+                            TextInput::make('bill.amount_due')
+                                ->label('Amount Due')
+                                ->numeric()
+                                ->disabled()
+                                ->dehydrated(false)
+                                ->prefix('₱'),
+                            TextInput::make('amount_paid')
+                                ->label('Amount Paid')
+                                ->required()
+                                ->numeric()
+                                ->reactive()
+                                ->maxValue(fn (callable $get) => 
+                                    $get ('bill.amount_due')
+                                )
+                                ->prefix('₱'),
+                            Select::make('payment_type')
+                                ->label('Payment Type')
+                                ->options([
+                                    'Cash' => 'Cash',
+                                    'GCash' => 'GCash',
+                                ])
+                                ->preload()
+                                ->reactive()
+                                ->required(),
+                            Select::make('bill_id')
+                                ->disabled()
+                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Bill cannot be changed once set.')
+                                ->label('Bill')
+                                ->relationship('Bill', 'bill_number')
+                                ->searchable()
+                                ->preload()
+                                ->reactive()
+                                ->afterStateHydrated(function ($state, callable $set) {
+                                    $bill = Bill::find($state);
+                                    $set('bill.amount_due', $bill?->amount_due ?? 0);
+                                })
+                                ->afterStateUpdated(function ($state, callable $set) {
+                                    $bill = Bill::find($state);
+                                    $set('bill.amount_due', $bill?->amount_due ?? 0);
+                                })
+                                ->required(),
+                            TextInput::make('reference_number')
+                                ->label('Reference Number')
+                                ->maxLength(255)
+                                ->required()
+                                ->hidden(fn (callable $get) => $get('payment_type') != 'GCash'),
+                        ])
+                    ])
+                    ->action(function (array $data, ServiceInvoice $record) {
+                        $invoice = $record;
+                        $bill = $invoice->bill; 
+                        if ($bill) {
+                            $totalPaid = $bill->serviceInvoices()->sum('amount_paid');
+                            $totalPaid -= $invoice->amount_paid;
+                            $totalPaid += $data['amount_paid'];
+                            $bill->amount_due = $bill->total_amount - $totalPaid;
+                            $bill->save();
+                            $bill->updatePaymentStatus(false); 
+                        }
+                        $invoice->update($data);
+                    }),
                 // Action::make('refund')
                 //     ->visible(fn (ServiceInvoice $record) => !$record->deleted_at)
                 //     ->label('Refund')

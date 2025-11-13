@@ -30,7 +30,7 @@ class BillsTable
                     ->label('Bill #')
                     ->toggleable()
                     ->color(
-                        fn ($record) => $record->deleted_at ? 'danger' : 'success'
+                        fn ($record) => now()->toDateString() > $record->due_date && $record->status !== 'Fully Paid' ? 'danger' : 'success'
                     )
                     ->sortable()
                     ->searchable(),
@@ -86,9 +86,9 @@ class BillsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
-                    ->visible(fn ($record) => $record->status !== 'Refunded'),
+                    ->visible(fn ($record) => $record->status !== 'Fully Paid'),
                 Action::make('createBill')
-                    ->visible(fn ($record) => $record->status !== 'Refunded')
+                    ->visible(fn ($record) => $record->status !== 'Fully Paid')
                     ->button()
                     ->label('Pay Bill')
                     ->icon('heroicon-o-plus')
@@ -174,7 +174,7 @@ class BillsTable
                 // ]),
             ])
             ->recordClasses(fn ($record) => [
-                'bg-red-100' => now()->toDateString() > $record->due_date && $record->status !== 'Fully Paid'
+                'bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800' => now()->toDateString() > $record->due_date && $record->status !== 'Fully Paid'
             ]);;
     }
 
