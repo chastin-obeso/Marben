@@ -18,14 +18,33 @@ class ServiceTypesTable
             ->columns([
                 TextColumn::make('service')
                     ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('job_orders_count')
+                    ->label('No. of Job Orders')
+                    ->numeric()
+                    ->state(function ($record) {
+                        return $record->job_orders->count();
+                    }),
+                TextColumn::make('ongoing_job_orders_count')
+                    ->label('Ongoing Job Orders')
+                    ->numeric()
+                    ->toggleable()
+                    ->state(function ($record) {
+                        return $record->job_orders()->whereNotIn('status', ['Completed', 'Closed'])->count();
+                    }),
+                TextColumn::make('completed_job_orders_count')
+                    ->label('Completed Job Orders')
+                    ->numeric()
+                    ->toggleable()
+                    ->state(function ($record) {
+                        return $record->job_orders()->where('status', 'Completed')->count();
+                    }),
+                TextColumn::make('closed_job_orders_count')
+                    ->label('Closed Job Orders')
+                    ->numeric()
+                    ->toggleable()
+                    ->state(function ($record) {
+                        return $record->job_orders()->where('status', 'Closed')->count();
+                    }),
             ])
             ->filters([
                 //
