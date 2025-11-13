@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
         // dd(asset('images/logo.jpg'));
         return $panel
             ->default()
+            ->profile()
             ->id('admin')
             ->path('admin')
             // ->brandName('MBR-E Marben')
