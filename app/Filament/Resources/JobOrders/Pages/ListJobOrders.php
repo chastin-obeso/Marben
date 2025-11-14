@@ -28,6 +28,17 @@ class ListJobOrders extends ListRecords
                     $data['service_fee_status'] = 'Unbilled';
                     return array_merge($data, $this->generateLastJobOrderNumber());
                 })
+                ->successNotification(
+                    Notification::make()
+                        ->title('Job Order Created Successfully')
+                        ->success()
+                )
+                ->after(function (array $data, $record) {
+                    JobOrder::find($record->id)->logs()->create([
+                        'details' => 'Job Order Created',
+                        'date' => now(),
+                    ]);        
+                })
                 ->closeModalByClickingAway(false),
 
         ];

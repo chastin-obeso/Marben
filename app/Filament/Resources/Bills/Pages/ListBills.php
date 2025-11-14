@@ -27,14 +27,19 @@ class ListBills extends ListRecords
                     $data['bill_date'] = now();
                     return array_merge($data, $this->generateLastBillNumber());
                 })
+                ->successNotification(
+                    Notification::make()
+                        ->title('Bill Created Successfully')
+                        ->success()
+                )
                 ->after(function (array $data, $record) {
                         $jobOrderId = $data['job_order_id'];
         
                         // 1. Update the parent Job Order status
                         $jobOrder = JobOrder::find($jobOrderId);
                         if ($jobOrder) {
-                            if ($jobOrder->service_fee_status == 'Unbilled') {
-                                $jobOrder->service_fee_status = 'Billed';
+                            if ($jobOrder->service_fee_bill_id == null) {
+                                $jobOrder->service_fee_bill_id = $record->id;
                             }
                             $jobOrder->save();
                         }
@@ -43,10 +48,10 @@ class ListBills extends ListRecords
                         JobOrder::find($jobOrderId)
                             ->unbilledJobOrderParts()
                             ->update(['bill_id' =>  $record->id]);
-                         Notification::make()
-                            ->title('Bill Created Successfully')
-                            ->success()
-                            ->send();            
+                        JobOrder::find($data['job_order_id'])->logs()->create([
+                            'details' => 'Created Bill #' . $data['bill_number'],
+                            'date' => now(),
+                        ]);        
                 })
                        
                 ->closeModalByClickingAway(false),

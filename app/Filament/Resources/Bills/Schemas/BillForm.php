@@ -49,7 +49,7 @@ class BillForm
                             // 1. Fetch the unbilled parts using the model method
                             $parts = JobOrder::find($state)?->unbilledJobOrderParts;
                             $parts_array = $parts->toArray();
-                            if(JobOrder::find($state)?->service_fee_status == 'Unbilled'){
+                            if(JobOrder::find($state)?->service_fee_bill_id == null){
                                 $service_fee = JobOrder::find($state)?->service_fee;
                                 $parts_array[] = [
                                     'name' => 'Service Fee',

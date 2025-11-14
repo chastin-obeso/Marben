@@ -1,17 +1,9 @@
-
 @php
-    $parts = $getRecord()->unbilledJobOrderParts;
-    if ($getRecord()->service_fee_status == 'Unbilled'){
-        $parts[] = [
-            'name' => 'Service Fee',
-            'unit_price' => 'N/A',
-            'quantity' => 'N/A',
-            'total_price' => $getRecord()->service_fee,
-        ];
-    }
-        
-
+    // Get the array of data stored in the 'parts_data' field state
+    $parts = $getState() ?? [];
+    dd($getState());
 @endphp
+
 
 
 <div class="overflow-x-auto rounded-lg border border-gray-200">

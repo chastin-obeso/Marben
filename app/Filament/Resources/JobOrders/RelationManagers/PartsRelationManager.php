@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\JobOrders\RelationManagers;
 
-use Filament\Actions\Action;
 use Filament\Tables\Table;
+use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
@@ -15,6 +15,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DissociateAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Actions\DissociateBulkAction;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -132,8 +133,17 @@ class PartsRelationManager extends RelationManager
                                 ->rule('decimal:0,2')
                             ->required(),
                     ])
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Part Added Successfully')
+                            ->success()
+                    )
                     ->action(function (array $data) {
                         $this->ownerRecord->parts()->create($data);
+                        $this->ownerRecord->logs()->create([
+                            'details' => 'Added Part: ' . $data['name'],
+                            'date' => now(),
+                        ]);
                     }),
             ])
             ->recordActions([

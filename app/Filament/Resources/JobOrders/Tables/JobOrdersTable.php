@@ -35,6 +35,7 @@ class JobOrdersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('job_order_number', 'desc')
             ->columns([
                 TextColumn::make('job_order_number')
                     ->label('Job Order #')
@@ -109,7 +110,7 @@ class JobOrdersTable
                 ->label('Open Job Order')
                 ->button()
                 ->icon('heroicon-o-eye'),
-                CreateAction::make('create_bill')
+                Action::make('create_bill')
                 ->modalHeading(function ($record) {
                     return 'Add a New Bill Record for ' . $record->job_order_number;
                 })
@@ -129,8 +130,12 @@ class JobOrdersTable
                     ->minDate(now()),
                 Select::make('job_order_id')
                     ->label('Job Order')
+                    ->options(function ($record) { 
+                        return [$record->id => $record->job_order_number]; 
+                    })
+                    ->disablePlaceholderSelection()
                     ->dehydrated()
-                    ->default(fn ($record) => $record->job_order_number)
+                    ->default(fn ($record) => $record->id)
                     ->searchable()
                     ->preload()
                     ->required()
@@ -140,7 +145,7 @@ class JobOrdersTable
                             // 1. Fetch the unbilled parts using the model method
                             $parts = JobOrder::find($record->id)?->unbilledJobOrderParts;
                             $parts_array = $parts->toArray();
-                            if(JobOrder::find($record->id)?->service_fee_status == 'Unbilled'){
+                            if(JobOrder::find($record->id)?->service_fee_bill_id == null){
                                 $service_fee = JobOrder::find($record->id)?->service_fee;
                                 $parts_array[] = [
                                     'name' => 'Service Fee',
@@ -173,13 +178,25 @@ class JobOrdersTable
                     $data['amount_due'] = $data['total_amount'];
                     $data['bill_date'] = now();
                     $data['job_order_id'] = $record->id;
-                    return array_merge($data, $this->generateLastBillNumber());
+                    return array_merge($data, JobOrdersTable::generateLastBillNumber());
                 })
-                ->action(function(array $data) {
+                ->successNotification( // Use built-in success notification
                     Notification::make()
                         ->title('Bill Created Successfully')
                         ->success()
-                        ->send();
+                )
+                ->action(function(array $data) {
+                    Bill::create([
+                        'bill_number' => $data['bill_number'],
+                        'bill_series' => $data['bill_series'],
+                        'job_order_id' => $data['job_order_id'],
+                        'bill_date' => $data['bill_date'],
+                        'due_date' => $data['due_date'],
+                        'total_amount' => $data['total_amount'],
+                        'amount_paid' => 0,
+                        'amount_due' => $data['total_amount'],
+                        'status' => $data['status'],
+                    ]);
                 })
                 ->after(function ($record, array $data) {
                         $jobOrderId = $data['job_order_id'];
@@ -187,17 +204,22 @@ class JobOrdersTable
                         // 1. Update the parent Job Order status
                         $jobOrder = JobOrder::find($jobOrderId);
                         if ($jobOrder) {
-                            if ($jobOrder->service_fee_status == 'Unbilled') {
-                                $jobOrder->service_fee_status = 'Billed';
+                            if ($jobOrder->service_fee_bill_id == null) {
+                                $jobOrder->service_fee_bill_id = Bill::latest('id')->first()->id;
                             }
                             $jobOrder->save();
                         }
-
+                        // dd($data);
                         // 2. Mark the individual unbilled Job Order Parts with the new Bill's ID
                         JobOrder::find($jobOrderId)
                             ->unbilledJobOrderParts()
-                            ->update(['bill_id' => $record->id]);
-                            })
+                            ->update(['bill_id' => Bill::latest('id')->first()->id]);
+                        
+                        JobOrder::find($data['job_order_id'])->logs()->create([
+                            'details' => 'Created Bill #' . $data['bill_number'],
+                            'date' => now(),
+                        ]);
+                })
                 ->closeModalByClickingAway(false),
             ])
             ->toolbarActions([

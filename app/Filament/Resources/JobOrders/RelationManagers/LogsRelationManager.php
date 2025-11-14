@@ -42,6 +42,7 @@ class LogsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('Job Order Log')
+            ->defaultSort('date', 'desc')
             ->columns([
                 TextColumn::make('details')->label('Details')->searchable(),
                 TextColumn::make('date')->label('Date')->dateTime()->sortable(),

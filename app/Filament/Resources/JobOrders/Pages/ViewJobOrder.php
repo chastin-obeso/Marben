@@ -117,6 +117,7 @@ class ViewJobOrder extends ViewRecord
                             ->exists()) {
                             return 'Cannot close job order with outstanding bills.';
                         }
+                        return null;
                     }
                     return 'Cannot close unbilled job order.';
                 })
