@@ -51,6 +51,7 @@ class Bill extends Model
         return $this->belongsTo(JobOrder::class);
     }
 
+
     public function jobOrderParts()
     {
         return $this->hasMany(JobOrderPart::class);

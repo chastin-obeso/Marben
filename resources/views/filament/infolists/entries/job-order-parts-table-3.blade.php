@@ -1,9 +1,15 @@
-@php
-    // Get the array of data stored in the 'parts_data' field state
-    $parts = $getState() ?? [];
-    dd($getState());
-@endphp
 
+@php
+    $parts = $getRecord()->jobOrderParts;
+    if ($getRecord()->jobOrder->service_fee_bill_id != null){
+        $parts[] = [
+            'name' => 'Service Fee',
+            'unit_price' => 'N/A',
+            'quantity' => 'N/A',
+            'total_price' => $getRecord()->jobOrder->service_fee,
+        ];
+    }
+@endphp
 
 
 <div class="overflow-x-auto rounded-lg border border-gray-200">

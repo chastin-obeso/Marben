@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Bills\Tables;
 
 use Dom\Text;
 use App\Models\Bill;
+use App\Models\JobOrder;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use App\Models\ServiceInvoice;
@@ -16,9 +17,13 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Schemas\Components\Utilities\Set;
 
 class BillsTable
 {
@@ -84,9 +89,52 @@ class BillsTable
                         ),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make()
-                    ->visible(fn ($record) => $record->status !== 'Fully Paid'),
+                            ViewAction::make(),
+                            EditAction::make()
+                                ->visible(fn ($record) => $record->status !== 'Fully Paid')
+                                ->schema([
+                                    // TextInput::make('total_amount')
+                                    //     ->label('Total Amount')
+                                    //     ->readOnly()
+                                    //     ->required()
+                                    //     ->numeric()
+                                    //     ->minValue(0)
+                                    //     ->prefix('₱'),
+                                    DatePicker::make('due_date')
+                                        ->label('Due Date')
+                                        ->required()
+                                        ->default(now())
+                                        ->minDate(now()),
+                                    // Select::make('job_order_id')
+                                    //     ->label('Job Order')
+                                    //     ->relationship('JobOrder', 'job_order_number')
+                                    //     ->searchable()
+                                    //     ->preload()
+                                    //     ->required()
+                                    //     ->live()
+                                    //     ->afterStateUpdated(function ($state, Set $set) {
+                                    //         if ($state) {
+                                    //             // 1. Fetch the unbilled parts using the model method
+                                    //             $parts = JobOrder::find($state)?->unbilledJobOrderParts;
+                                    //             $parts_array = $parts->toArray();
+                                    //             if(JobOrder::find($state)?->service_fee_bill_id == null){
+                                    //                 $service_fee = JobOrder::find($state)?->service_fee;
+                                    //                 $parts_array[] = [
+                                    //                     'name' => 'Service Fee',
+                                    //                     'unit_price' => 'N/A',
+                                    //                     'quantity' => 'N/A',
+                                    //                     'total_price' => $service_fee,
+                                    //                 ];
+                                    //             }
+                                    //             // 2. Convert to an array and store this array in the form's data state
+                                    //             $set('parts_data', $parts_array);
+                                    //             $set('total_amount', collect($parts_array)->sum('total_price'));
+                                    //         } else {
+                                    //             $set('parts_data', []);
+                                    //         }
+                                    //     }),
+                                   
+                    ]),
                 Action::make('createBill')
                     ->visible(fn ($record) => $record->status !== 'Fully Paid')
                     ->button()

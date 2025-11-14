@@ -3,10 +3,11 @@
 namespace App\Filament\Resources\JobOrders\Schemas;
 
 use Dom\Text;
+use App\Models\Bill;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 
 class JobOrderInfolist
 {
@@ -56,7 +57,8 @@ class JobOrderInfolist
                         TextEntry::make('service_fee')
                             ->label('Service Fee')
                             ->prefix('₱'),
-                        TextEntry::make('service_fee_status')
+                        TextEntry::make('service_fee_bill_id')
+                            ->state( fn ($record) => $record->service_fee_bill_id == null ? 'Unbilled' : 'Billed '.'('.Bill::find($record->service_fee_bill_id)->bill_number.')' )
                             ->label('Service Fee Status'),
                 ]),
             ]);

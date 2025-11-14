@@ -14,6 +14,7 @@ use GuzzleHttp\Promise\Create;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Redirect;
@@ -119,12 +120,19 @@ class BillInfolist
                         TextEntry::make('JobOrder.job_order_number')->label('Job Order #'),
                         TextEntry::make('particulars')->html(),
                     ]),
-                Section::make('Service Invoices')
-                    ->columnSpanFull()
-                    ->components([
-                        ViewEntry::make('service_invoices')
-                        ->view('filament.infolists.entries.service-invoices-table'),
-                    ]),
+                    Section::make('Service Invoices')
+                        ->columnSpanFull()
+                        ->components([
+                            ViewEntry::make('service_invoices')
+                            ->view('filament.infolists.entries.service-invoices-table'),
+                        ]),
+                    Section::make('Particulars')
+                        ->columnSpanFull()
+                        ->components([
+                            ViewField::make('parts_data')
+                            ->live()
+                            ->view('filament.infolists.entries.job-order-parts-table-3'),
+                        ]),
                 ]);
     }
 }
