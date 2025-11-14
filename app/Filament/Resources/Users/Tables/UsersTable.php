@@ -40,12 +40,12 @@ class UsersTable
                     ->visible(Auth::user()->can('ChangeStatus:User'))
                     ->label('Active')
                     ->onColor(function(User $user) {
-                        if (auth()->user()->id === $user->id) {
+                        if (auth()->user()->id === $user->id || $user->role === '1') {
                             return 'gray';
                         }
                     })
                     ->offColor(function(User $user) {
-                        if (auth()->user()->id === $user->id) {
+                        if (auth()->user()->id === $user->id || $user->role === '1') {
                             return 'gray';
                         }
                     })
@@ -53,11 +53,17 @@ class UsersTable
                         if (auth()->user()->id === $user->id) {
                             return true;
                         }
+                        if ($user->role === '1') {
+                            return true;
+                        }
                         return false;
                     })
                     ->tooltip(function(User $user){
                         if(auth()->user()->id === $user->id){
                             return 'Cannot toggle own status!';
+                        }
+                        if($user->role === '1'){
+                            return 'Cannot change status of Super Admin!';
                         }
                     })
                     ->onIcon('heroicon-o-check')

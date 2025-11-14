@@ -7,6 +7,7 @@ use App\Models\Bill;
 use App\Models\JobOrder;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use GuzzleHttp\Promise\Create;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -111,7 +112,7 @@ class JobOrdersTable
                     ->label('Rejobs')
                     ->trueLabel('Rejobs Only')
                     ->falseLabel('Without Rejobs')
-                    ->default(false)
+                    ->default('')
                     ->queries(
                         true: fn (Builder $query) => $query->whereNotNull('re_job_order_id'),
                         false: fn (Builder $query) => $query->whereNull('re_job_order_id'),
@@ -125,14 +126,12 @@ class JobOrdersTable
                 ),
                 Filter::make('Hide Closed')
                         ->label('Hide Closed')
-                        ->default(true)
                         ->query(fn ($query) =>
                             $query
                                 ->whereNotIn('status', ['Closed'])
                 ),
                 Filter::make('Hide Cancelled')
                         ->label('Hide Cancelled')
-                        ->default(true)
                         ->query(fn ($query) =>
                             $query
                                 ->whereNotIn('status', ['Cancelled'])
@@ -150,7 +149,7 @@ class JobOrdersTable
                     $record->unbilledJobOrderParts->isEmpty() && $record->service_fee_bill_id !== null ? 
                     'All parts have already been billed and service fee is already billed.' : ''
                 )
-                ->visible(fn ($record) => !in_array($record->status, ['Closed','Cancelled']))
+                ->visible(fn ($record) => !in_array($record->status, ['Closed','Cancelled']) && Filament::auth()->user()->can('Create:Bill'))
                 ->modalHeading(function ($record) {
                     return 'Add a New Bill Record for ' . $record->job_order_number;
                 })
