@@ -147,13 +147,10 @@ class PartsRelationManager extends RelationManager
                     }),
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                EditAction::make()
+                ->visible(fn ($record) => $record->bill_id == null),
+                DeleteAction::make()
+                ->visible(fn ($record) => $record->bill_id == null),
             ]);
     }
 }
