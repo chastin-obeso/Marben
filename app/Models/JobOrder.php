@@ -22,6 +22,8 @@ class JobOrder extends Model
         'series',
         'service_type_id',
         're_job_order_id',
+        'service_fee',
+        'service_fee_bill_id',
     ];
     public $timestamps = false;
 
@@ -56,11 +58,18 @@ class JobOrder extends Model
 
     public function reJobOrder()
     {
-        return $this->belongsTo(JobOrder::class, 're_job_order_id');
+        return $this->hasMany(JobOrder::class, 're_job_order_id');
     }
 
     public function scopeDateBetween(Builder $query, array $date)
     {
         $query->whereBetween('date_requested', [$date]);
     }
+
+    public function unbilledJobOrderParts()
+    {
+        return $this->parts()->whereNull('bill_id');
+    }
+
+    
 }

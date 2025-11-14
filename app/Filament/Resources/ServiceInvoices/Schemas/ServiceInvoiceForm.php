@@ -26,6 +26,7 @@ class ServiceInvoiceForm
                     ->required()
                     ->numeric()
                     ->reactive()
+                    ->minValue(0)
                     ->maxValue(fn (callable $get) => 
                         $get ('bill.amount_due')
                     )

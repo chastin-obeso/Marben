@@ -10,7 +10,7 @@ use App\Filament\Resources\ServiceInvoices\ServiceInvoiceResource;
 class ServiceInvoicesRelationManager extends RelationManager
 {
     
-    protected static string $relationship = 'service_invoices';
+    protected static string $relationship = 'serviceInvoices';
 
     protected static ?string $relatedResource = ServiceInvoiceResource::class;
 

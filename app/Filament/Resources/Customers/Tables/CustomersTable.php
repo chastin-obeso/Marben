@@ -22,7 +22,8 @@ class CustomersTable
                     ->label('Email address')
                     ->searchable(),
                 TextColumn::make('phone')
-                    ->searchable(),
+                    ->searchable()
+                    ->state(fn ($record) => $record->phone ?? 'N/A'),
             ])
             ->filters([
                 //

@@ -12,7 +12,8 @@
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
-            @forelse ($getRecord()->serviceInvoices as $invoice)
+            @if ($getRecord())
+                @forelse ($getRecord()->serviceInvoices as $invoice)
                 <tr>
                     <td class="px-4 py-2">{{ $invoice->service_invoice_number }}</td>
                     <td class="px-4 py-2">{{ $invoice->payment_date}}</td>
@@ -24,6 +25,8 @@
                     <td colspan="4" class="px-4 py-3 text-center text-gray-500">No service invoices found.</td>
                 </tr>
             @endforelse
+            @endif
+            
         </tbody>
     </table>
 </div>

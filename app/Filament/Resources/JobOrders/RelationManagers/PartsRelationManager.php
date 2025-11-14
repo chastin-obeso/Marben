@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\JobOrders\RelationManagers;
 
-
 use Filament\Tables\Table;
+use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
@@ -15,7 +15,9 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DissociateAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Actions\DissociateBulkAction;
+use Filament\Facades\Filament;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -72,28 +74,88 @@ class PartsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->heading('Materials/Parts')
             ->recordTitleAttribute('Job Order Parts')
+            ->defaultSort('job_order_id', 'desc')
             ->columns([
                 TextColumn::make('name')->label('Part Name')->searchable()->sortable(),
                 TextColumn::make('unit_price')->label('Unit Price')->money('php', true)->sortable(),
                 TextColumn::make('quantity')->label('Quantity')->sortable(),
                 TextColumn::make('total_price')->label('Total Price')->money('php', true)->sortable(),
-                TextColumn::make('status')->label('Status')->sortable(),
+                TextColumn::make('job_order_id')
+                ->label('Status')
+                ->color(fn($record) => $record->bill_id !== null ? 'success' : 'danger')
+                ->sortable()
+                ->formatStateUsing(function ($record) {
+                    if($record->bill_id !== null) {
+                        return 'Billed';
+                    } 
+                    else 
+                    {
+                        return 'Unbilled';
+                    }
+                }),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                CreateAction::make(),
+                Action::make('add_part')
+                    ->visible(fn () => Filament::auth()->user()->can('CreateJobOrderPart:JobOrder'))
+                    ->label('Add Material/Part')
+                    ->icon('heroicon-o-plus')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Name')
+                            ->required(),
+                        TextInput::make('unit_price')
+                            ->label('Unit Price')
+                            ->live(debounce: 500)
+                            ->afterStateUpdated(fn (Get $get, Set $set) =>
+                                $set('total_price', $get('unit_price') * $get('quantity'))
+                            )
+                            ->numeric()
+                                ->minValue(0)
+                                ->rule('decimal:0,2')
+                            ->required(),
+                        TextInput::make('quantity')
+                            ->label('Quantity')
+                            ->numeric()
+                            ->minValue(1)
+                            ->live(debounce: 500)
+                            ->afterStateUpdated(fn (Get $get, Set $set) =>
+                                $set('total_price', $get('unit_price') * $get('quantity'))
+                            )
+                            ->numeric()
+                            ->required(),
+                        TextInput::make('total_price')
+                            ->label('Total Price')
+                            ->disabled()
+                            ->reactive()
+                            ->dehydrated()
+                            ->numeric()
+                                ->minValue(0)
+                                ->rule('decimal:0,2')
+                            ->required(),
+                    ])
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Part Added Successfully')
+                            ->success()
+                    )
+                    ->action(function (array $data) {
+                        $this->ownerRecord->parts()->create($data);
+                        $this->ownerRecord->logs()->create([
+                            'details' => 'Added Part: ' . $data['name'],
+                            'date' => now(),
+                        ]);
+                    }),
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                EditAction::make()
+                ->visible(fn ($record) => $record->bill_id == null && Filament::auth()->user()->can('EditJobOrderPart:JobOrder')),
+                DeleteAction::make()
+                ->visible(fn ($record) => $record->bill_id == null && Filament::auth()->user()->can('DeleteJobOrderPart:JobOrder')),
             ]);
     }
 }

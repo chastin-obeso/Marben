@@ -5,6 +5,7 @@ namespace App\Filament\Resources\JobOrders\RelationManagers;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
+use Filament\Facades\Filament;
 use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -42,25 +43,31 @@ class LogsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('Job Order Log')
+            ->defaultSort('date', 'desc')
             ->columns([
                 TextColumn::make('details')->label('Details')->searchable(),
-                TextColumn::make('date')->label('Date')->date()->sortable(),
+                TextColumn::make('date')->label('Date')->dateTime()->sortable(),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                CreateAction::make(),
+                Action::make('add_log')
+                    ->visible(fn() => Filament::auth()->user()->can('CreateLog:JobOrder'))
+                    ->icon('heroicon-o-plus')
+                    ->label('Add Log')
+                    ->schema([
+                        TextInput::make('details')
+                            ->required(),
+                    ])
+                    ->action(function (array $data) {
+                        $data['date'] = now();
+                        $this->ownerRecord->logs()->create($data);
+                    }),
                 
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                EditAction::make()->visible(fn() => Filament::auth()->user()->can('EditLog:JobOrder')),
             ]);
     }
 }

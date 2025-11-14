@@ -20,9 +20,23 @@ use App\Filament\Resources\JobOrders\Pages\CreateJobOrder;
 use App\Filament\Resources\JobOrders\Schemas\JobOrderForm;
 use App\Filament\Resources\JobOrders\Tables\JobOrdersTable;
 use App\Filament\Resources\JobOrders\Schemas\JobOrderInfolist;
+use Illuminate\Support\Facades\Auth;
 
 class JobOrderResource extends Resource
 {
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        $user = Auth::user();
+
+        if ($user && $user->can('ViewAssigned:JobOrder') && !$user->can('ViewAny:JobOrder')) {
+            return $query->where('user_id', $user->id);
+        }
+
+
+        return $query;
+    }
     protected static ?string $model = JobOrder::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
@@ -61,6 +75,7 @@ class JobOrderResource extends Resource
                 RelationManagers\PartsRelationManager::class,
                 RelationManagers\LogsRelationManager::class,
                 RelationManagers\BillsRelationManager::class,
+                RelationManagers\RejobRelationManager::class,
             ]),
         ];
     }

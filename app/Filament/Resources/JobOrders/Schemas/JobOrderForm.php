@@ -5,6 +5,7 @@ namespace App\Filament\Resources\JobOrders\Schemas;
 use App\Models\User;
 use App\Models\Customer;
 use App\Models\JobOrder;
+use Dom\Text;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
@@ -76,7 +77,7 @@ class JobOrderForm
                         DatePicker::make('date_target')
                             ->label('Target Date')
                             ->required()
-                            ->minDate(now()),
+                            ->minDate(today()),
                         Select::make('service_type_id')
                             ->relationship('serviceType', 'service')
                             ->searchable()
@@ -104,6 +105,24 @@ class JobOrderForm
                         'class' => 'shadow-lg'
                     ])
                     ->columns(2),
+                TextInput::make('service_fee')
+                    ->numeric()
+                    ->minValue(0)
+                    ->disabled(function (?Model $record) {
+                        if($record == null) return false;
+                        if ($record instanceof JobOrder) {
+                            return $record->service_fee_bill_id !== null;
+                        }
+                        return false;
+                    })
+                    ->hintIcon('heroicon-o-information-circle')
+                    ->hintIconTooltip('Service fee cannot be edited if it has been billed.')
+                    ->columnSpanFull()
+                    ->label('Service Fee')
+                    ->required()
+                    ->numeric()
+                    ->prefix('₱')
+                    ->placeholder('Input service fee'),
             ]);
 
             

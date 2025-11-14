@@ -2,17 +2,19 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Models\User;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Radio;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Auth;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\TextColumn;
     use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 
 class UsersTable
@@ -30,11 +32,40 @@ class UsersTable
                     ->sortable(),
                 TextColumn::make('name'),
                 TextColumn::make('phone')
-                    ->searchable(),
+                    ->searchable()
+                    ->state(fn ($record) => $record->phone ?? 'N/A'),
                 TextColumn::make('username')
                     ->searchable(),
                 ToggleColumn::make('status')
+                    ->visible(Auth::user()->can('ChangeStatus:User'))
                     ->label('Active')
+                    ->onColor(function(User $user) {
+                        if (auth()->user()->id === $user->id || $user->role === '1') {
+                            return 'gray';
+                        }
+                    })
+                    ->offColor(function(User $user) {
+                        if (auth()->user()->id === $user->id || $user->role === '1') {
+                            return 'gray';
+                        }
+                    })
+                    ->disabled(function (User $user) {
+                        if (auth()->user()->id === $user->id) {
+                            return true;
+                        }
+                        if ($user->role === '1') {
+                            return true;
+                        }
+                        return false;
+                    })
+                    ->tooltip(function(User $user){
+                        if(auth()->user()->id === $user->id){
+                            return 'Cannot toggle own status!';
+                        }
+                        if($user->role === '1'){
+                            return 'Cannot change status of Super Admin!';
+                        }
+                    })
                     ->onIcon('heroicon-o-check')
                     ->offIcon('heroicon-o-x-mark')
                     ->searchable(),
@@ -43,6 +74,7 @@ class UsersTable
                     ->searchable(),
                 TextColumn::make('roles.name')
                     ->searchable()
+                    ->label('Role')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()

@@ -47,6 +47,7 @@ class ServiceInvoicesTable
                     ->sortable(),
                 TextColumn::make('reference_number')
                     ->label('Reference Number')
+                    ->state(fn ($record) => $record->reference_number ?? 'N/A')
                     ->toggleable()
                     ->sortable(),
                 TextColumn::make('payment_date')
@@ -69,11 +70,7 @@ class ServiceInvoicesTable
             ])
             ->recordActions([
                 ViewAction::make()
-                ->modalHeading('Service Invoice Details')
-                ->url(fn ($record) => request('activeRecord') == $record->getKey()
-                    ? null
-                    : \App\Filament\Resources\ServiceInvoices\ServiceInvoiceResource::getUrl('index', ['activeRecord' => $record])
-                ),
+                ->modalHeading('Service Invoice Details'),
                 EditAction::make()
                     ->visible(fn (ServiceInvoice $record) => !$record->deleted_at)
                     ->schema([
@@ -91,8 +88,12 @@ class ServiceInvoicesTable
                                 ->required()
                                 ->numeric()
                                 ->reactive()
-                                ->maxValue(fn (callable $get) => 
-                                    $get ('bill.amount_due')
+                                ->validationMessages([
+                                    'maxValue' => 'The updated amount paid exceeds the amount due on the bill.',
+                                ])
+                                ->minValue(0)
+                                ->maxValue(fn (callable $get, ServiceInvoice $record) => 
+                                    $get ('bill.amount_due') + $record->amount_paid
                                 )
                                 ->prefix('₱'),
                             Select::make('payment_type')
@@ -137,7 +138,7 @@ class ServiceInvoicesTable
                             $totalPaid += $data['amount_paid'];
                             $bill->amount_due = $bill->total_amount - $totalPaid;
                             $bill->save();
-                            $bill->updatePaymentStatus(false); 
+                            $bill->updatePaymentStatus($bill->jobOrder); 
                         }
                         $invoice->update($data);
                     }),

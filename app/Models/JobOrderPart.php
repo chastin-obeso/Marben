@@ -13,10 +13,19 @@ class JobOrderPart extends Model
         'unit_price',
         'quantity',
         'total_price',
-        'status',
         'job_order_id',
     ];
 
     
     public $timestamps = false;
+
+    public function jobOrder()
+    {
+        return $this->belongsTo(JobOrder::class);
+    }
+
+    public function bill()
+    {
+        return $this->hasMany(Bill::class);
+    }
 }

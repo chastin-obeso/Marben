@@ -32,39 +32,4 @@ class BillPolicy
         return $authUser->can('Update:Bill');
     }
 
-    public function delete(AuthUser $authUser, Bill $bill): bool
-    {
-        return $authUser->can('Delete:Bill');
-    }
-
-    public function restore(AuthUser $authUser, Bill $bill): bool
-    {
-        return $authUser->can('Restore:Bill');
-    }
-
-    public function forceDelete(AuthUser $authUser, Bill $bill): bool
-    {
-        return $authUser->can('ForceDelete:Bill');
-    }
-
-    public function forceDeleteAny(AuthUser $authUser): bool
-    {
-        return $authUser->can('ForceDeleteAny:Bill');
-    }
-
-    public function restoreAny(AuthUser $authUser): bool
-    {
-        return $authUser->can('RestoreAny:Bill');
-    }
-
-    public function replicate(AuthUser $authUser, Bill $bill): bool
-    {
-        return $authUser->can('Replicate:Bill');
-    }
-
-    public function reorder(AuthUser $authUser): bool
-    {
-        return $authUser->can('Reorder:Bill');
-    }
-
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\JobOrders\Pages;
 
 use App\Models\JobOrder;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Checkbox;
@@ -27,6 +28,8 @@ class ViewJobOrder extends ViewRecord
             ->button()
             ->outlined(),
             Action::make('start_job_order')
+                ->tooltip(fn () => Filament::auth()->user()->cannot('Start:JobOrder') ? 'You do not have permission to start job orders.' : null)
+                ->disabled(fn () => Filament::auth()->user()->cannot('Start:JobOrder'))
                 ->visible(fn () => $this->record->status === 'Scheduled')
                 ->button()
                 ->label('Start Job Order')
@@ -46,6 +49,8 @@ class ViewJobOrder extends ViewRecord
                         ->send();
                 }),
             Action::make('hold_job_order')
+                ->tooltip(fn () => Filament::auth()->user()->cannot('Hold:JobOrder') ? 'You do not have permission to hold job orders.' : null)
+                ->disabled(fn () => Filament::auth()->user()->cannot('Hold:JobOrder'))
                 ->visible(fn () => $this->record->status === 'In Progress')
                 ->button()
                 ->label('Hold Job Order')
@@ -64,6 +69,8 @@ class ViewJobOrder extends ViewRecord
                         ->send();
                 }),
             Action::make('complete_job_order')
+                ->tooltip(fn () => Filament::auth()->user()->cannot('Complete:JobOrder') ? 'You do not have permission to complete job orders.' : null)
+                ->disabled(fn () => Filament::auth()->user()->cannot('Complete:JobOrder'))
                 ->visible(fn () => $this->record->status === 'In Progress')
                 ->button()
                 ->label('Complete Job Order')
@@ -82,6 +89,8 @@ class ViewJobOrder extends ViewRecord
                         ->send();
                 }),    
             Action::make('resume_job_order')
+                ->tooltip(fn () => Filament::auth()->user()->cannot('Resume:JobOrder') ? 'You do not have permission to resume job orders.' : null)
+                ->disabled(fn () => Filament::auth()->user()->cannot('Resume:JobOrder'))
                 ->visible(fn () => $this->record->status === 'On Hold')
                 ->button()
                 ->label('Resume Job Order')
@@ -102,15 +111,31 @@ class ViewJobOrder extends ViewRecord
             Action::make('close_job_order')
            
                 ->visible(fn () => $this->record->status === 'Completed')
-                ->disabled(function (Model $record) {
-                    if (!$record->bills()->exists()) {
-                        return true;
+                ->disabled(fn () => Filament::auth()->user()->cannot('Close:JobOrder') 
+                || (!$this->record->bills()->exists() 
+                || $this->record->bills()->where('amount_due', '>', 0)->exists()
+                || $this->record->unbilledJobOrderParts()->exists()
+                ))
+                ->tooltip(function (Model $record) {
+                    if (Filament::auth()->user()->cannot('Close:JobOrder')) {
+                        return 'You do not have permission to close job orders.';
                     }
-                    return $record->bills()
-                        ->where('amount_due', '>', 0)
-                        ->exists();
+                    if ($record->unbilledJobOrderParts()->exists()) {
+                        return 'Cannot close job order with unbilled parts.';
+                    }
+                    if (!$record->bills()->exists()) {
+                        return 'Cannot close unbilled job order.';
+                    }
+                    if ($record->bills()->exists()) {
+                        if ($record->bills()
+                            ->where('amount_due', '>', 0)
+                            ->exists()) {
+                            return 'Cannot close job order with outstanding bills.';
+                        }
+                        return null;
+                    }
+                    return 'Cannot close unbilled job order.';
                 })
-                ->tooltip('Cannot close job order with outstanding bills.')
                 ->button()
                 ->label('Close Job Order')
                 ->color('primary')
@@ -129,6 +154,8 @@ class ViewJobOrder extends ViewRecord
                         ->send();
                 }),  
             Action::make('cancel_job_order')
+                ->tooltip(fn () => Filament::auth()->user()->cannot('Cancel:JobOrder') ? 'You do not have permission to cancel job orders.' : null)
+                ->disabled(fn () => Filament::auth()->user()->cannot('Cancel:JobOrder'))
                 ->visible(fn () => in_array($this->record->status, ['Scheduled', 'In Progress', 'On Hold']))
                 ->button()
                 ->label('Cancel Job Order')
@@ -150,14 +177,23 @@ class ViewJobOrder extends ViewRecord
             Action::make('rejob')
                 ->visible(fn () => $this->record->status === 'Closed')
                 ->disabled(function (Model $record) {
-                    if ($record->re_job_order_id) {
+                    // dd($record->reJobOrder()->where(function ($query) {$query->where('status', 'closed')->orWhere('status', 'completed');})->exists());
+                    if ($record->reJobOrder()->whereNotIn('status', ['closed', 'cancelled'])->exists()
+                        || Filament::auth()->user()->cannot('Rejob:JobOrder') 
+                        || $record->re_job_order_id != null) {
                         return true;
                     }
                     return false;
                 })
-                ->tooltip(function () {
-                    if ($this->record->re_job_order_id) {
-                        return 'Rejob already created for this job order.';
+                ->tooltip(function (Model $record) {
+                    if ($record->reJobOrder()->whereNotIn('status', ['closed', 'cancelled'])->exists()) {
+                        return 'There is an ongoing rejob.';
+                    }
+                    if (Filament::auth()->user()->cannot('Rejob:JobOrder')) {
+                        return 'You do not have permission to create rejobs.';
+                    }
+                    if ($record->re_job_order_id != null) {
+                        return 'This job order is already a rejob.';
                     }
                     return 'Create a rejob from this job order.';
                 })
@@ -187,9 +223,19 @@ class ViewJobOrder extends ViewRecord
                     RichEditor::make('description')
                         ->label('Description')
                         ->default($this->record->description),
+                    TextInput::make('service_fee')
+                        ->numeric()
+                        ->minValue(0)
+                        ->columnSpanFull()
+                        ->label('Service Fee')
+                        ->required()
+                        ->numeric()
+                        ->prefix('₱')
+                        ->placeholder('Input service fee'),
                     Checkbox::make('copy_parts')
                         ->label('Copy parts from original')
                         ->default(true),
+                        
                 ])
                 ->action(function (array $data) {
                     $last = JobOrder::whereYear('date_requested', now()->year)->latest('series')->first();
@@ -206,6 +252,8 @@ class ViewJobOrder extends ViewRecord
                         'date_requested'   => now(),
                         'series'           => $series,
                         'job_order_number' => $jobNumber,
+                        're_job_order_id'  => $this->record->id,
+                        'service_fee'      => $data['service_fee'],
                     ]);
 
                     if (!empty($data['copy_parts'])) {
@@ -214,9 +262,7 @@ class ViewJobOrder extends ViewRecord
                         }
                     }
 
-                    $this->record->update([
-                        're_job_order_id' => $new->id,
-                    ]);
+                    
 
 
                     $this->record->logs()->create([

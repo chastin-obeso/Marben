@@ -40,8 +40,15 @@ class UserForm
                                 ->password()
                                 ->required()
                                 ->revealable(),
-                            TextInput::make('phone'),
+                            TextInput::make('phone')
+                            ->label('Phone number (09XXXXXXXXX)')
+                            ->tel()
+                            ->regex('/^09[0-9]{9}$/')
+                            ->validationMessages([
+                                'regex' => 'The phone number must start with 09 and be exactly 11 digits long.',
+                            ]),
                             Select::make('role')
+                                ->visible(fn () => Filament::auth()->user()->can('Assign:User'))
                                 ->label('Role')
                                 ->relationship('roles', 'name')
                                 ->preload()
