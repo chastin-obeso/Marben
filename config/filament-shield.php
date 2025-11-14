@@ -1,7 +1,11 @@
 <?php
 
+use App\Filament\Resources\Bills\BillResource;
 use App\Filament\Resources\Users\UserResource;
+use App\Filament\Resources\Customers\CustomerResource;
 use App\Filament\Resources\JobOrders\JobOrderResource;
+use App\Filament\Resources\ServiceTypes\ServiceTypeResource;
+use App\Filament\Resources\ServiceInvoices\ServiceInvoiceResource;
 
 return [
 
@@ -123,16 +127,17 @@ return [
         'merge' => true,
         'generate' => true,
         'methods' => [
-            'viewAny', 'view', 'create', 'update', 'delete', 'restore',
-            'forceDelete', 'forceDeleteAny', 'restoreAny', 'replicate', 'reorder',
+            'viewAny', 'view', 'create', 'update', 
+            // 'delete', 'restore',
+            // 'forceDelete', 'forceDeleteAny', 'restoreAny', 'replicate', 'reorder',
         ],
         'single_parameter_methods' => [
             'viewAny',
             'create',
-            'deleteAny',
-            'forceDeleteAny',
-            'restoreAny',
-            'reorder',
+            // 'deleteAny',
+            // 'forceDeleteAny',
+            // 'restoreAny',
+            // 'reorder',
         ],
     ],
 
@@ -179,17 +184,51 @@ return [
                 'view',
                 'create',
                 'update',
-                'delete',
+                'start',
+                'hold',
+                'complete',
+                'resume',
+                'close',
+                'cancel',
+                'rejob',
+                'createLog',
+                'editLog',
+                'createJobOrderPart',
+                'editJobOrderPart',
+                'deleteJobOrderPart',
             ],
             UserResource::class => [
                 'viewAny',
                 'view',
                 'create',
                 'update',
-                'delete',
                 'assign',
                 'changeStatus',
-            ]
+            ],
+            BillResource::class => [
+                'viewAny',
+                'view',
+                'create',
+                'update',
+            ],
+            CustomerResource::class => [
+                'viewAny',
+                'view',
+                'create',
+                'update',
+            ],
+            ServiceInvoiceResource::class => [
+                'viewAny',
+                'view',
+                'create',
+                'update',
+            ],
+            ServiceTypeResource::class => [
+                'viewAny',
+                'view',
+                'create',
+                'update',
+            ],
         ],
         'exclude' => [
             //

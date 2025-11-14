@@ -5,6 +5,7 @@ namespace App\Filament\Resources\JobOrders\RelationManagers;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
+use Filament\Facades\Filament;
 use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -52,6 +53,7 @@ class LogsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Action::make('add_log')
+                    ->visible(fn() => Filament::auth()->user()->can('CreateLog:JobOrder'))
                     ->icon('heroicon-o-plus')
                     ->label('Add Log')
                     ->schema([
@@ -65,7 +67,7 @@ class LogsRelationManager extends RelationManager
                 
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->visible(fn() => Filament::auth()->user()->can('EditLog:JobOrder')),
             ]);
     }
 }

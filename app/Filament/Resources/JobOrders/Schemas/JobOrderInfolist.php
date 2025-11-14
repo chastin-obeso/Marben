@@ -55,6 +55,7 @@ class JobOrderInfolist
                     ->collapsible()
                     ->components([
                         TextEntry::make('service_fee')
+                            ->editable(false)
                             ->label('Service Fee')
                             ->prefix('₱'),
                         TextEntry::make('service_fee_bill_id')

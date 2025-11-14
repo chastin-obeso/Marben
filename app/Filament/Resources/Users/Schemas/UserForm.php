@@ -42,6 +42,7 @@ class UserForm
                                 ->revealable(),
                             TextInput::make('phone'),
                             Select::make('role')
+                                ->visible(fn () => Filament::auth()->user()->can('Assign:User'))
                                 ->label('Role')
                                 ->relationship('roles', 'name')
                                 ->preload()

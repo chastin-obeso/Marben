@@ -106,6 +106,14 @@ class JobOrderForm
                     ])
                     ->columns(2),
                 TextInput::make('service_fee')
+                    ->disabled(function (Model $record) {
+                        if ($record instanceof JobOrder) {
+                            return $record->service_fee_bill_id !== null;
+                        }
+                        return false;
+                    })
+                    ->hintIcon('heroicon-o-information-circle')
+                    ->hintIconTooltip('Service fee cannot be edited if it has been billed.')
                     ->columnSpanFull()
                     ->label('Service Fee')
                     ->required()

@@ -17,6 +17,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Actions\DissociateBulkAction;
+use Filament\Facades\Filament;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -99,6 +100,7 @@ class PartsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Action::make('add_part')
+                    ->visible(fn () => Filament::auth()->user()->can('CreateJobOrderPart:JobOrder'))
                     ->label('Add Material/Part')
                     ->icon('heroicon-o-plus')
                     ->schema([
@@ -148,9 +150,9 @@ class PartsRelationManager extends RelationManager
             ])
             ->recordActions([
                 EditAction::make()
-                ->visible(fn ($record) => $record->bill_id == null),
+                ->visible(fn ($record) => $record->bill_id == null && Filament::auth()->user()->can('EditJobOrderPart:JobOrder')),
                 DeleteAction::make()
-                ->visible(fn ($record) => $record->bill_id == null),
+                ->visible(fn ($record) => $record->bill_id == null && Filament::auth()->user()->can('DeleteJobOrderPart:JobOrder')),
             ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\JobOrders\Pages;
 
 use App\Models\JobOrder;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Checkbox;
@@ -27,6 +28,8 @@ class ViewJobOrder extends ViewRecord
             ->button()
             ->outlined(),
             Action::make('start_job_order')
+                ->tooltip(fn () => Filament::auth()->user()->cannot('Start:JobOrder') ? 'You do not have permission to start job orders.' : null)
+                ->disabled(fn () => Filament::auth()->user()->cannot('Start:JobOrder'))
                 ->visible(fn () => $this->record->status === 'Scheduled')
                 ->button()
                 ->label('Start Job Order')
@@ -46,6 +49,8 @@ class ViewJobOrder extends ViewRecord
                         ->send();
                 }),
             Action::make('hold_job_order')
+                ->tooltip(fn () => Filament::auth()->user()->cannot('Hold:JobOrder') ? 'You do not have permission to hold job orders.' : null)
+                ->disabled(fn () => Filament::auth()->user()->cannot('Hold:JobOrder'))
                 ->visible(fn () => $this->record->status === 'In Progress')
                 ->button()
                 ->label('Hold Job Order')
@@ -64,6 +69,8 @@ class ViewJobOrder extends ViewRecord
                         ->send();
                 }),
             Action::make('complete_job_order')
+                ->tooltip(fn () => Filament::auth()->user()->cannot('Complete:JobOrder') ? 'You do not have permission to complete job orders.' : null)
+                ->disabled(fn () => Filament::auth()->user()->cannot('Complete:JobOrder'))
                 ->visible(fn () => $this->record->status === 'In Progress')
                 ->button()
                 ->label('Complete Job Order')
@@ -82,6 +89,8 @@ class ViewJobOrder extends ViewRecord
                         ->send();
                 }),    
             Action::make('resume_job_order')
+                ->tooltip(fn () => Filament::auth()->user()->cannot('Resume:JobOrder') ? 'You do not have permission to resume job orders.' : null)
+                ->disabled(fn () => Filament::auth()->user()->cannot('Resume:JobOrder'))
                 ->visible(fn () => $this->record->status === 'On Hold')
                 ->button()
                 ->label('Resume Job Order')
@@ -102,15 +111,14 @@ class ViewJobOrder extends ViewRecord
             Action::make('close_job_order')
            
                 ->visible(fn () => $this->record->status === 'Completed')
-                ->disabled(function (Model $record) {
-                    if (!$record->bills()->exists()) {
-                        return true;
-                    }
-                    return $record->bills()
-                        ->where('amount_due', '>', 0)
-                        ->exists();
-                })
+                ->disabled(fn () => Filament::auth()->user()->cannot('Close:JobOrder') || (!$this->record->bills()->exists() || $this->record->bills()->where('amount_due', '>', 0)->exists()))
                 ->tooltip(function (Model $record) {
+                    if (Filament::auth()->user()->cannot('Close:JobOrder')) {
+                        return 'You do not have permission to close job orders.';
+                    }
+                    if (!$record->bills()->exists()) {
+                        return 'Cannot close unbilled job order.';
+                    }
                     if ($record->bills()->exists()) {
                         if ($record->bills()
                             ->where('amount_due', '>', 0)
@@ -139,6 +147,8 @@ class ViewJobOrder extends ViewRecord
                         ->send();
                 }),  
             Action::make('cancel_job_order')
+                ->tooltip(fn () => Filament::auth()->user()->cannot('Cancel:JobOrder') ? 'You do not have permission to cancel job orders.' : null)
+                ->disabled(fn () => Filament::auth()->user()->cannot('Cancel:JobOrder'))
                 ->visible(fn () => in_array($this->record->status, ['Scheduled', 'In Progress', 'On Hold']))
                 ->button()
                 ->label('Cancel Job Order')
@@ -158,6 +168,8 @@ class ViewJobOrder extends ViewRecord
                     
                 }),  
             Action::make('rejob')
+                ->tooltip(fn () => Filament::auth()->user()->cannot('Rejob:JobOrder') ? 'You do not have permission to create rejobs.' : null)
+                ->disabled(fn () => Filament::auth()->user()->cannot('Rejob:JobOrder'))
                 ->visible(fn () => $this->record->status === 'Closed')
                 ->disabled(function (Model $record) {
                     // dd($record->reJobOrder()->where(function ($query) {$query->where('status', 'closed')->orWhere('status', 'completed');})->exists());
