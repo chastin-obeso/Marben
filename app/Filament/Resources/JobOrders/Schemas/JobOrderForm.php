@@ -77,7 +77,7 @@ class JobOrderForm
                         DatePicker::make('date_target')
                             ->label('Target Date')
                             ->required()
-                            ->minDate(now()),
+                            ->minDate(today()),
                         Select::make('service_type_id')
                             ->relationship('serviceType', 'service')
                             ->searchable()
@@ -106,7 +106,10 @@ class JobOrderForm
                     ])
                     ->columns(2),
                 TextInput::make('service_fee')
-                    ->disabled(function (Model $record) {
+                    ->numeric()
+                    ->minValue(0)
+                    ->disabled(function (?Model $record) {
+                        if($record == null) return false;
                         if ($record instanceof JobOrder) {
                             return $record->service_fee_bill_id !== null;
                         }

@@ -1,7 +1,7 @@
 
 @php
     $parts = $getRecord()->unbilledJobOrderParts;
-    if ($getRecord()->service_fee_status == 'Unbilled'){
+    if ($getRecord()->service_fee_bill_id == null){
         $parts[] = [
             'name' => 'Service Fee',
             'unit_price' => 'N/A',

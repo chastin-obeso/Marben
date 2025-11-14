@@ -26,6 +26,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\TernaryFilter;
 use App\Filament\Resources\Bills\BillResource;
 use Filament\Schemas\Components\Utilities\Set;
 
@@ -80,6 +81,15 @@ class JobOrdersTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
+                    ->color(function ($record) {
+                        if($record->status === 'Cancelled'){
+                            return 'danger';
+                        } elseif($record->status === 'Closed'){
+                            return 'success';
+                        } else {
+                            return '';
+                        }
+                    })
                     ->toggleable()
                     ->searchable()
                     ->sortable(),
@@ -97,20 +107,50 @@ class JobOrdersTable
                 SelectFilter::make('service_type')
                     ->label('Service Type')
                     ->relationship('serviceType', 'service'),
+                TernaryFilter::make('is_rejob')
+                    ->label('Rejobs')
+                    ->trueLabel('Rejobs Only')
+                    ->falseLabel('Without Rejobs')
+                    ->default(false)
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNotNull('re_job_order_id'),
+                        false: fn (Builder $query) => $query->whereNull('re_job_order_id'),
+                ),
                 Filter::make('Delayed')
                         ->label('Delayed')
                         ->query(fn ($query) =>
                             $query
                                 ->whereDate('date_target', '<', now()->toDateString())
                                 ->whereNotIn('status', ['Completed', 'Closed'])
-                        ),
+                ),
+                Filter::make('Hide Closed')
+                        ->label('Hide Closed')
+                        ->default(true)
+                        ->query(fn ($query) =>
+                            $query
+                                ->whereNotIn('status', ['Closed'])
+                ),
+                Filter::make('Hide Cancelled')
+                        ->label('Hide Cancelled')
+                        ->default(true)
+                        ->query(fn ($query) =>
+                            $query
+                                ->whereNotIn('status', ['Cancelled'])
+                ),
             ])
             ->recordActions([
                 ViewAction::make()
+                ->visible()
                 ->label('Open Job Order')
                 ->button()
                 ->icon('heroicon-o-eye'),
                 Action::make('create_bill')
+                ->disabled(fn ($record) => $record->unbilledJobOrderParts->isEmpty() && $record->service_fee_bill_id !== null)
+                ->tooltip(fn ($record) => 
+                    $record->unbilledJobOrderParts->isEmpty() && $record->service_fee_bill_id !== null ? 
+                    'All parts have already been billed and service fee is already billed.' : ''
+                )
+                ->visible(fn ($record) => !in_array($record->status, ['Closed','Cancelled']))
                 ->modalHeading(function ($record) {
                     return 'Add a New Bill Record for ' . $record->job_order_number;
                 })
@@ -127,7 +167,7 @@ class JobOrdersTable
                     ->label('Due Date')
                     ->required()
                     ->default(now())
-                    ->minDate(now()),
+                    ->minDate(today()),
                 Select::make('job_order_id')
                     ->label('Job Order')
                     ->options(function ($record) { 
@@ -228,7 +268,10 @@ class JobOrdersTable
                 ]),
             ])
             ->recordClasses(fn ($record) => [
-                'bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800' => now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed'
+                'bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800' => now()->toDateString() > $record->date_target 
+                && $record->status !== 'Completed' 
+                && $record->status !== 'Closed' 
+                && $record->status !== 'Cancelled'
             ]);
     }
 

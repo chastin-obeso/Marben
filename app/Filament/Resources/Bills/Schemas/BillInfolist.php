@@ -39,7 +39,7 @@ class BillInfolist
                     ->headerActions(
                         [
                             Action::make('createBill')
-                            ->visible(fn ($record) => $record->status !== 'Refunded')
+                            ->visible(fn ($record) => $record->status !== 'Fully Paid' && $record->amount_due > 0)
                             ->button()
                             ->label('Pay Bill')
                             ->icon('heroicon-o-plus')
@@ -118,7 +118,6 @@ class BillInfolist
                         TextEntry::make('amount_due')->money('PHP', true),
                         TextEntry::make('status'),
                         TextEntry::make('JobOrder.job_order_number')->label('Job Order #'),
-                        TextEntry::make('particulars')->html(),
                     ]),
                     Section::make('Service Invoices')
                         ->columnSpanFull()

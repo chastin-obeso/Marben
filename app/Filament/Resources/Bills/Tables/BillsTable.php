@@ -30,6 +30,7 @@ class BillsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('bill_number', 'desc')
             ->columns([
                 TextColumn::make('bill_number')
                     ->label('Bill #')
@@ -103,8 +104,8 @@ class BillsTable
                                     DatePicker::make('due_date')
                                         ->label('Due Date')
                                         ->required()
-                                        ->default(now())
-                                        ->minDate(now()),
+                                        ->default(today())
+                                        ->minDate(today()),
                                     // Select::make('job_order_id')
                                     //     ->label('Job Order')
                                     //     ->relationship('JobOrder', 'job_order_number')
@@ -155,6 +156,7 @@ class BillsTable
                             ->required()
                             ->numeric()
                             ->reactive()
+                            ->minValue(0)
                             ->maxValue(fn (callable $get) => 
                                 $get ('amount_due')
                             )

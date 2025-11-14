@@ -26,6 +26,8 @@ class BillForm
         return $schema
             ->components([
                 TextInput::make('total_amount')
+                    ->hintIcon('heroicon-o-information-circle')
+                    ->hintIconTooltip('This amount is automatically calculated based on the selected Job Order and its unbilled parts.')
                     ->label('Total Amount')
                     ->readOnly()
                     ->required()
@@ -35,8 +37,8 @@ class BillForm
                 DatePicker::make('due_date')
                     ->label('Due Date')
                     ->required()
-                    ->default(now())
-                    ->minDate(now()),
+                    ->default(today())
+                    ->minDate(today()),
                 Select::make('job_order_id')
                     ->label('Job Order')
                     ->relationship('JobOrder', 'job_order_number')

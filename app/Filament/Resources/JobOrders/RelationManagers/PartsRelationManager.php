@@ -84,6 +84,7 @@ class PartsRelationManager extends RelationManager
                 TextColumn::make('total_price')->label('Total Price')->money('php', true)->sortable(),
                 TextColumn::make('job_order_id')
                 ->label('Status')
+                ->color(fn($record) => $record->bill_id !== null ? 'success' : 'danger')
                 ->sortable()
                 ->formatStateUsing(function ($record) {
                     if($record->bill_id !== null) {
@@ -119,6 +120,8 @@ class PartsRelationManager extends RelationManager
                             ->required(),
                         TextInput::make('quantity')
                             ->label('Quantity')
+                            ->numeric()
+                            ->minValue(1)
                             ->live(debounce: 500)
                             ->afterStateUpdated(fn (Get $get, Set $set) =>
                                 $set('total_price', $get('unit_price') * $get('quantity'))

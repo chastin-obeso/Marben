@@ -55,10 +55,10 @@ class JobOrderInfolist
                     ->collapsible()
                     ->components([
                         TextEntry::make('service_fee')
-                            ->editable(false)
                             ->label('Service Fee')
                             ->prefix('₱'),
                         TextEntry::make('service_fee_bill_id')
+                            ->color(fn($record) => $record->service_fee_bill_id == null ? 'danger' : 'success')
                             ->state( fn ($record) => $record->service_fee_bill_id == null ? 'Unbilled' : 'Billed '.'('.Bill::find($record->service_fee_bill_id)->bill_number.')' )
                             ->label('Service Fee Status'),
                 ]),

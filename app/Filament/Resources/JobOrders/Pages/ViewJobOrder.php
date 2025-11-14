@@ -111,10 +111,17 @@ class ViewJobOrder extends ViewRecord
             Action::make('close_job_order')
            
                 ->visible(fn () => $this->record->status === 'Completed')
-                ->disabled(fn () => Filament::auth()->user()->cannot('Close:JobOrder') || (!$this->record->bills()->exists() || $this->record->bills()->where('amount_due', '>', 0)->exists()))
+                ->disabled(fn () => Filament::auth()->user()->cannot('Close:JobOrder') 
+                || (!$this->record->bills()->exists() 
+                || $this->record->bills()->where('amount_due', '>', 0)->exists()
+                || $this->record->unbilledJobOrderParts()->exists()
+                ))
                 ->tooltip(function (Model $record) {
                     if (Filament::auth()->user()->cannot('Close:JobOrder')) {
                         return 'You do not have permission to close job orders.';
+                    }
+                    if ($record->unbilledJobOrderParts()->exists()) {
+                        return 'Cannot close job order with unbilled parts.';
                     }
                     if (!$record->bills()->exists()) {
                         return 'Cannot close unbilled job order.';
@@ -168,19 +175,25 @@ class ViewJobOrder extends ViewRecord
                     
                 }),  
             Action::make('rejob')
-                ->tooltip(fn () => Filament::auth()->user()->cannot('Rejob:JobOrder') ? 'You do not have permission to create rejobs.' : null)
-                ->disabled(fn () => Filament::auth()->user()->cannot('Rejob:JobOrder'))
                 ->visible(fn () => $this->record->status === 'Closed')
                 ->disabled(function (Model $record) {
                     // dd($record->reJobOrder()->where(function ($query) {$query->where('status', 'closed')->orWhere('status', 'completed');})->exists());
-                    if ($record->reJobOrder()->where(function ($query) {$query->where('status', 'closed')->orWhere('status', 'completed');})->exists()) {
+                    if ($record->reJobOrder()->whereNotIn('status', ['closed', 'cancelled'])->exists()
+                        || Filament::auth()->user()->cannot('Rejob:JobOrder') 
+                        || $record->re_job_order_id != null) {
                         return true;
                     }
                     return false;
                 })
                 ->tooltip(function (Model $record) {
-                    if (!$record->reJobOrder()->where('status', 'closed')->orWhere('status', 'completed')->exists()) {
-                        return 'Rejob already created for this job order.';
+                    if ($record->reJobOrder()->whereNotIn('status', ['closed', 'cancelled'])->exists()) {
+                        return 'There is an ongoing rejob.';
+                    }
+                    if (Filament::auth()->user()->cannot('Rejob:JobOrder')) {
+                        return 'You do not have permission to create rejobs.';
+                    }
+                    if ($record->re_job_order_id != null) {
+                        return 'This job order is already a rejob.';
                     }
                     return 'Create a rejob from this job order.';
                 })
@@ -210,9 +223,19 @@ class ViewJobOrder extends ViewRecord
                     RichEditor::make('description')
                         ->label('Description')
                         ->default($this->record->description),
+                    TextInput::make('service_fee')
+                        ->numeric()
+                        ->minValue(0)
+                        ->columnSpanFull()
+                        ->label('Service Fee')
+                        ->required()
+                        ->numeric()
+                        ->prefix('₱')
+                        ->placeholder('Input service fee'),
                     Checkbox::make('copy_parts')
                         ->label('Copy parts from original')
                         ->default(true),
+                        
                 ])
                 ->action(function (array $data) {
                     $last = JobOrder::whereYear('date_requested', now()->year)->latest('series')->first();
@@ -230,6 +253,7 @@ class ViewJobOrder extends ViewRecord
                         'series'           => $series,
                         'job_order_number' => $jobNumber,
                         're_job_order_id'  => $this->record->id,
+                        'service_fee'      => $data['service_fee'],
                     ]);
 
                     if (!empty($data['copy_parts'])) {

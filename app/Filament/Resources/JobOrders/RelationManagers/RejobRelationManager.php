@@ -12,7 +12,7 @@ class RejobRelationManager extends RelationManager
 {
     protected static string $relationship = 'reJobOrder';
 
-    // protected static ?string $relatedResource = JobOrderResource::class;
+    protected static ?string $relatedResource = JobOrderResource::class;
 
     public function table(Table $table): Table
     {
