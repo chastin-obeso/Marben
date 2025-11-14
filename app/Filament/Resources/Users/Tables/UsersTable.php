@@ -32,7 +32,8 @@ class UsersTable
                     ->sortable(),
                 TextColumn::make('name'),
                 TextColumn::make('phone')
-                    ->searchable(),
+                    ->searchable()
+                    ->state(fn ($record) => $record->phone ?? 'N/A'),
                 TextColumn::make('username')
                     ->searchable(),
                 ToggleColumn::make('status')
@@ -67,6 +68,7 @@ class UsersTable
                     ->searchable(),
                 TextColumn::make('roles.name')
                     ->searchable()
+                    ->label('Role')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()

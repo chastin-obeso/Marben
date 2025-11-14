@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Pages\Dashboard;
@@ -36,7 +37,7 @@ class AdminPanelProvider extends PanelProvider
             ->darkModeBrandLogo(asset('Images/logo-dark.png'))
             ->brandLogoHeight('5vh')
             ->darkMode()
-            ->login()
+            ->login(Login::class)
             ->colors([
                 'primary' => Color::Lime[400],   
                 'gray-1' => Color::Gray[900],
