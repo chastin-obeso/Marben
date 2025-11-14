@@ -62,17 +62,20 @@ class Bill extends Model
         return $this->hasMany(ServiceInvoice::class);
     }
 
-    public function updatePaymentStatus($refunded): void
+    public function updatePaymentStatus(JobOrder $jobOrder): void
     {
         $totalPaid = $this->serviceInvoices()->sum('amount_paid');
         $this->amount_due = max($this->total_amount - $totalPaid, 0);
 
         $newStatus = 'Unpaid';
 
-        if ($refunded ?? true) {
-            $newStatus = 'Refunded';
-        } elseif ($this->amount_due <= 0) {
+        if ($this->amount_due <= 0) {
             $newStatus = 'Fully Paid';
+            $jobOrder->logs()->create([
+                'details' => $this->bill_number . ' fully paid',
+                'date' => now(),
+            ]);
+
         } elseif ($this->serviceInvoices()->exists()) {
             $newStatus = 'Partially Paid';
         }

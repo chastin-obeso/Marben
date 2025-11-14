@@ -94,7 +94,7 @@ class BillInfolist
                                                 $bill->amount_due -= $invoice->amount_paid;
                                                 $bill->save();
                                             }
-                                    $invoice->bill->updatePaymentStatus(false); 
+                                    $invoice->bill->updatePaymentStatus($bill->jobOrder); 
                                     
                                     Notification::make()
                                         ->title('Bill Paid Successfully')

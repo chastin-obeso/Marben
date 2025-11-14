@@ -191,7 +191,7 @@ class BillsTable
                                         $bill->amount_due -= $invoice->amount_paid;
                                         $bill->save();
                                     }
-                            $invoice->bill->updatePaymentStatus(false);      
+                            $invoice->bill->updatePaymentStatus($bill->jobOrder);      
                         }
                     
                     )

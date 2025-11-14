@@ -137,7 +137,7 @@ class ServiceInvoicesTable
                             $totalPaid += $data['amount_paid'];
                             $bill->amount_due = $bill->total_amount - $totalPaid;
                             $bill->save();
-                            $bill->updatePaymentStatus(false); 
+                            $bill->updatePaymentStatus($bill->jobOrder); 
                         }
                         $invoice->update($data);
                     }),
