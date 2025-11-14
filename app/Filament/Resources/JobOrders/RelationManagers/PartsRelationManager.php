@@ -72,7 +72,9 @@ class PartsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->heading('Materials/Parts')
             ->recordTitleAttribute('Job Order Parts')
+            ->defaultSort('job_order_id', 'desc')
             ->columns([
                 TextColumn::make('name')->label('Part Name')->searchable()->sortable(),
                 TextColumn::make('unit_price')->label('Unit Price')->money('php', true)->sortable(),
@@ -80,6 +82,7 @@ class PartsRelationManager extends RelationManager
                 TextColumn::make('total_price')->label('Total Price')->money('php', true)->sortable(),
                 TextColumn::make('job_order_id')
                 ->label('Status')
+                ->sortable()
                 ->formatStateUsing(function ($record) {
                     if($record->bill_id !== null) {
                         return 'Billed';
@@ -95,10 +98,11 @@ class PartsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Action::make('add_part')
-                    ->label('Add Job Order Part')
+                    ->label('Add Material/Part')
+                    ->icon('heroicon-o-plus')
                     ->schema([
                         TextInput::make('name')
-                            ->label('Part Name')
+                            ->label('Name')
                             ->required(),
                         TextInput::make('unit_price')
                             ->label('Unit Price')

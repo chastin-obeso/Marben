@@ -44,13 +44,14 @@ class LogsRelationManager extends RelationManager
             ->recordTitleAttribute('Job Order Log')
             ->columns([
                 TextColumn::make('details')->label('Details')->searchable(),
-                TextColumn::make('date')->label('Date')->date()->sortable(),
+                TextColumn::make('date')->label('Date')->dateTime()->sortable(),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
                 Action::make('add_log')
+                    ->icon('heroicon-o-plus')
                     ->label('Add Log')
                     ->schema([
                         TextInput::make('details')
