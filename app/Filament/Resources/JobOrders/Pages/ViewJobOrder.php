@@ -110,7 +110,16 @@ class ViewJobOrder extends ViewRecord
                         ->where('amount_due', '>', 0)
                         ->exists();
                 })
-                ->tooltip('Cannot close job order with outstanding bills.')
+                ->tooltip(function (Model $record) {
+                    if ($record->bills()->exists()) {
+                        if ($record->bills()
+                            ->where('amount_due', '>', 0)
+                            ->exists()) {
+                            return 'Cannot close job order with outstanding bills.';
+                        }
+                    }
+                    return 'Cannot close unbilled job order.';
+                })
                 ->button()
                 ->label('Close Job Order')
                 ->color('primary')
@@ -150,13 +159,14 @@ class ViewJobOrder extends ViewRecord
             Action::make('rejob')
                 ->visible(fn () => $this->record->status === 'Closed')
                 ->disabled(function (Model $record) {
-                    if ($record->re_job_order_id) {
+                    // dd($record->reJobOrder()->where(function ($query) {$query->where('status', 'closed')->orWhere('status', 'completed');})->exists());
+                    if ($record->reJobOrder()->where(function ($query) {$query->where('status', 'closed')->orWhere('status', 'completed');})->exists()) {
                         return true;
                     }
                     return false;
                 })
-                ->tooltip(function () {
-                    if ($this->record->re_job_order_id) {
+                ->tooltip(function (Model $record) {
+                    if (!$record->reJobOrder()->where('status', 'closed')->orWhere('status', 'completed')->exists()) {
                         return 'Rejob already created for this job order.';
                     }
                     return 'Create a rejob from this job order.';
@@ -206,6 +216,7 @@ class ViewJobOrder extends ViewRecord
                         'date_requested'   => now(),
                         'series'           => $series,
                         'job_order_number' => $jobNumber,
+                        're_job_order_id'  => $this->record->id,
                     ]);
 
                     if (!empty($data['copy_parts'])) {
@@ -214,9 +225,7 @@ class ViewJobOrder extends ViewRecord
                         }
                     }
 
-                    $this->record->update([
-                        're_job_order_id' => $new->id,
-                    ]);
+                    
 
 
                     $this->record->logs()->create([

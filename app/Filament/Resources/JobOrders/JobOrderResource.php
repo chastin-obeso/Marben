@@ -75,6 +75,7 @@ class JobOrderResource extends Resource
                 RelationManagers\PartsRelationManager::class,
                 RelationManagers\LogsRelationManager::class,
                 RelationManagers\BillsRelationManager::class,
+                RelationManagers\RejobRelationManager::class,
             ]),
         ];
     }

@@ -50,7 +50,16 @@ class LogsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                CreateAction::make(),
+                Action::make('add_log')
+                    ->label('Add Log')
+                    ->schema([
+                        TextInput::make('details')
+                            ->required(),
+                    ])
+                    ->action(function (array $data) {
+                        $data['date'] = now();
+                        $this->ownerRecord->logs()->create($data);
+                    }),
                 
             ])
             ->recordActions([

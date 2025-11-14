@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\JobOrders\RelationManagers;
 
-
+use Filament\Actions\Action;
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
@@ -94,7 +94,43 @@ class PartsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                CreateAction::make(),
+                Action::make('add_part')
+                    ->label('Add Job Order Part')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Part Name')
+                            ->required(),
+                        TextInput::make('unit_price')
+                            ->label('Unit Price')
+                            ->live(debounce: 500)
+                            ->afterStateUpdated(fn (Get $get, Set $set) =>
+                                $set('total_price', $get('unit_price') * $get('quantity'))
+                            )
+                            ->numeric()
+                                ->minValue(0)
+                                ->rule('decimal:0,2')
+                            ->required(),
+                        TextInput::make('quantity')
+                            ->label('Quantity')
+                            ->live(debounce: 500)
+                            ->afterStateUpdated(fn (Get $get, Set $set) =>
+                                $set('total_price', $get('unit_price') * $get('quantity'))
+                            )
+                            ->numeric()
+                            ->required(),
+                        TextInput::make('total_price')
+                            ->label('Total Price')
+                            ->disabled()
+                            ->reactive()
+                            ->dehydrated()
+                            ->numeric()
+                                ->minValue(0)
+                                ->rule('decimal:0,2')
+                            ->required(),
+                    ])
+                    ->action(function (array $data) {
+                        $this->ownerRecord->parts()->create($data);
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),

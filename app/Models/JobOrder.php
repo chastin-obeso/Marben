@@ -58,7 +58,7 @@ class JobOrder extends Model
 
     public function reJobOrder()
     {
-        return $this->belongsTo(JobOrder::class, 're_job_order_id');
+        return $this->hasMany(JobOrder::class, 're_job_order_id');
     }
 
     public function scopeDateBetween(Builder $query, array $date)
