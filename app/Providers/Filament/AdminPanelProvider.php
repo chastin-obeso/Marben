@@ -21,6 +21,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -64,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
+                FilamentApexChartsPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,
@@ -82,6 +84,9 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make()
                         ->label('User Management')
                         ->icon('heroicon-o-users'),
+                    NavigationGroup::make()
+                        ->label('Sales Reports')
+                        ->icon('heroicon-o-chart-bar'),
                 ]
             )
             ->viteTheme('resources/css/filament/admin/theme.css');
