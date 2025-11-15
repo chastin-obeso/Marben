@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources\JobOrders\Schemas;
 
+use Dom\Text;
 use App\Models\User;
 use App\Models\Customer;
 use App\Models\JobOrder;
-use Dom\Text;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Illuminate\Database\Eloquent\Model;
@@ -85,6 +86,7 @@ class JobOrderForm
                             ->required(),
                         Select::make('user_id')
                             ->label('Employee')
+                            ->default(Filament::auth()->user()->id)
                             ->options(function (Get $get) {
                                 $selected = $get('service_type_id');
 

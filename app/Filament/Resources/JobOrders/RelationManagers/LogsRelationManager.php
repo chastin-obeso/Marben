@@ -53,7 +53,7 @@ class LogsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Action::make('add_log')
-                    ->visible(fn() => Filament::auth()->user()->can('CreateLog:JobOrder'))
+                    ->visible(fn() => Filament::auth()->user()->can('CreateLog:JobOrder') && $this->ownerRecord->status != 'Closed')
                     ->icon('heroicon-o-plus')
                     ->label('Add Log')
                     ->schema([

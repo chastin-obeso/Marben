@@ -12,6 +12,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\JobOrders\JobOrderResource;
 
 class JobOrderTableWidget extends TableWidget
 {
@@ -33,6 +34,7 @@ class JobOrderTableWidget extends TableWidget
     public function table(Table $table): Table
     {
         return $table
+            ->defaultSort('date_target', 'asc')
             ->query(function (): Builder {
                 $user = Auth::user();
                 if ($user && $user->can('ViewAssigned:JobOrder') && !$user->can('ViewAny:JobOrder')) {
@@ -43,11 +45,13 @@ class JobOrderTableWidget extends TableWidget
             ->columns([
                 Stack::make([
                     TextColumn::make('job_order_number')
+                        ->color(fn ($record) => now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed' ? 'danger' : 'success')
                         ->description(fn($record) => "Target Date: ". Carbon::parse($record->date_target)->format('F d, Y'))
-                        ->weight('bold'),
-                    TextColumn::make('description')
-                        ->html()
-                        ->color('gray-1'),
+                        ->weight('bold')
+                        ->url(fn ($record): string => JobOrderResource::getUrl('view', ['record' => $record]))
+                    // TextColumn::make('description')
+                    //     ->html()
+                    //     ->color('gray-1'),
                 ])
             ])
             ->filters([
