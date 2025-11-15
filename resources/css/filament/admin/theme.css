@@ -6,6 +6,13 @@
 @source '../../../../resources/views/filament/**/*';
 @source '../../../../vendor/guava/calendar/resources/**/*';
 
+.guava-calendar .day,
+.guava-calendar .fc-daygrid-day-frame {
+    height: 120px !important;    /* adjust as needed */
+    max-height: 120px !important;
+    overflow: hidden;
+}
+
 .fi-modal-header 
 {
     @apply bg-gradient-to-r from-lime-400 from-10% via-lime-300 via-30% to-white to-90%;

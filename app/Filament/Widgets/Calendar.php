@@ -28,10 +28,14 @@ class Calendar extends CalendarWidget
 
     protected bool $dateClickEnabled = true;
 
+    protected bool $eventClickEnabled = true;
+
     public function getHeading(): string|HtmlString
     {
         return  new HtmlString('<div>Calendar</div>');
     }
+
+    protected bool $dayMaxEvents = true;
 
     public function createJobOrderAction(): CreateAction
     {
@@ -88,7 +92,8 @@ class Calendar extends CalendarWidget
                                                 ->start($job->date_target)
                                                 ->end($job->date_target)
                                                 ->allDay()
-                                                ->model($job)
+                                                ->model($job::class)
+                                                ->action('view')
                 );
     }
 
