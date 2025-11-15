@@ -32,4 +32,9 @@ class ServiceInvoicePolicy
         return $authUser->can('Update:ServiceInvoice');
     }
 
+    public function delete(AuthUser $authUser, ServiceInvoice $serviceInvoice): bool
+    {
+        return $authUser->can('Delete:ServiceInvoice');
+    }
+
 }

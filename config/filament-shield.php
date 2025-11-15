@@ -222,6 +222,7 @@ return [
                 'view',
                 'create',
                 'update',
+                'delete',
             ],
             ServiceTypeResource::class => [
                 'viewAny',

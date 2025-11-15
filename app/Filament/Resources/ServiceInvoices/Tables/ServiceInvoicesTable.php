@@ -9,6 +9,7 @@ use Filament\Actions\Action;
 use App\Models\ServiceInvoice;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\View;
@@ -16,16 +17,19 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Schemas\Components\Section;
+use Filament\Facades\Filament;
 
 class ServiceInvoicesTable
 {
+    
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('service_invoice_number')
                     ->label('Invoice Number')
@@ -68,9 +72,40 @@ class ServiceInvoicesTable
                         'GCash' => 'GCash',
                     ]),
             ])
+            ->headerActions([
+                Action::make('disable_delete')
+                    ->visible(fn ($livewire) => $livewire->canDelete)
+                    ->label('Lock Delete Action')
+                    ->action(function ($livewire) {
+                        $livewire->canDelete = false;
+                    }),
+                Action::make('enable_delete')
+                    ->visible(fn ($livewire) => !$livewire->canDelete)
+                    ->label('Unlock Delete Action')
+                    ->action(function ($livewire) {
+                        $livewire->canDelete = true;
+                    }),
+            ])
             ->recordActions([
                 ViewAction::make()
                 ->modalHeading('Service Invoice Details'),
+                DeleteAction::make()
+                    ->name('delete_invoice')
+                    ->disabled(fn ($livewire) => !$livewire->canDelete)
+                    ->visible(Filament::auth()->user()->can('Delete:ServiceInvoice'))
+                    ->tooltip( fn ($livewire) => !$livewire->canDelete ? 'Delete action is locked. Unlock to enable.' : null )
+                    ->requiresConfirmation()
+                    ->modalHeading('Delete Service Invoice')
+                    ->modalDescription('Are you sure you want to remove this payment? This action cannot be undone.')
+                    ->action(function (ServiceInvoice $invoice) {
+                        $bill = $invoice->bill;
+                        if ($bill) {
+                            $bill->amount_due += $invoice->amount_paid;
+                            $bill->save();
+                        }
+                        $invoice->bill->updatePaymentStatus($invoice->bill->jobOrder);
+                        $invoice->delete();
+                    }),
                 EditAction::make()
                     ->visible(fn (ServiceInvoice $record) => !$record->deleted_at)
                     ->schema([

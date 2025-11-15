@@ -45,7 +45,26 @@ class JobOrderTableWidget extends TableWidget
             ->columns([
                 Stack::make([
                     TextColumn::make('job_order_number')
-                        ->color(fn ($record) => now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed' ? 'danger' : 'success')
+                        ->tooltip(
+                    function ($record) {
+                            if(now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed') {
+                                return 'Overdue: '. Carbon::parse($record->date_target)->diffForHumans(now());
+                            }
+                            if(now()->toDateString() == $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed') {
+                                return 'Due Today';
+                            }
+                            else return 'On Schedule';
+                            }
+                        )
+                        ->color(function ($record) { 
+                            if(now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed') {
+                                return 'danger';
+                            }
+                            if(now()->toDateString() == $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed') {
+                                return 'warning';
+                            }
+                            else return 'success'; 
+                        })
                         ->description(fn($record) => "Target Date: ". Carbon::parse($record->date_target)->format('F d, Y'))
                         ->weight('bold')
                         ->url(fn ($record): string => JobOrderResource::getUrl('view', ['record' => $record]))
@@ -56,9 +75,6 @@ class JobOrderTableWidget extends TableWidget
             ])
             ->filters([
                 
-            ])
-            ->headerActions([
-                //
             ])
             ->recordActions([
                 //
