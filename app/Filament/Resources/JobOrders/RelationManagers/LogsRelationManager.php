@@ -19,6 +19,7 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\RichEditor;
 use Filament\Actions\DissociateBulkAction;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Filters\SelectFilter;
 
 class LogsRelationManager extends RelationManager
 {
@@ -49,7 +50,41 @@ class LogsRelationManager extends RelationManager
                 TextColumn::make('date')->label('Date')->dateTime()->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('type')
+                    ->name('type')
+                    ->label('Log Type')
+                    ->options([
+                        'Parts' => 'Parts',
+                        'Rejob' => 'Rejob',
+                        'Bill' => 'Bill',
+                        'Job Order' => 'Job Order',
+                        'User-inputted' => 'User-inputted',
+                    ])
+                    ->query(function ($query, $state) {
+                        switch ($state['value']) {
+                            case 'Parts':
+                                $query->where('details', 'like', '%Part%');
+                                break;
+                            case 'Rejob':
+                                $query->where('details', 'like', '%Rejob%');
+                                break;
+                            case 'Bill':
+                                $query->where('details', 'like', '%Bill%');
+                                break;
+                            case 'Job Order':
+                                $query->where('details', 'like', '%Job Order%');
+                                break;
+                            case 'User-inputted':
+                                $query->whereNot(function ($q) {
+                                    $q->where('details', 'like', '%Part%')
+                                      ->orWhere('details', 'like', '%Rejob%')
+                                      ->orWhere('details', 'like', '%Bill%')
+                                      ->orWhere('details', 'like', '%Job Order%');
+                                });
+                                break;
+                        }
+                        return $query;
+                    }),
             ])
             ->headerActions([
                 Action::make('add_log')
