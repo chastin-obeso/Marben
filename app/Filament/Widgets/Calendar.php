@@ -28,6 +28,7 @@ class Calendar extends CalendarWidget
 
     protected bool $dateClickEnabled = true;
 
+
     protected bool $eventClickEnabled = true;
 
     public function getHeading(): string|HtmlString
@@ -44,10 +45,10 @@ class Calendar extends CalendarWidget
                         'date_target' => $info->date->toDateString()
                     ])
                     ->mutateDataUsing(function($data) {
-                        $data['status'] = 'Pending';
-                        
-                        // dd(array_merge($data, $this->generateLastJobOrderNumber()));
-                        return array_merge($data, $this->generateLastJobOrderNumber());
+                    $data['status'] = 'Scheduled';
+                    $data['date_requested'] = now();
+                    $data['service_fee_status'] = 'Unbilled';
+                    return array_merge($data, $this->generateLastJobOrderNumber());
                     });
     }
 
@@ -58,10 +59,11 @@ class Calendar extends CalendarWidget
     public function generateLastJobOrderNumber(): array
     {
         $job_order = JobOrder::whereYear('date_requested', now()->year)->latest('series')->first();
+        
         $series = $job_order?->series + 1;
         return [
             'series' => $series,
-            'job_order_number' => '#JO' . sprintf('%05d', $series)
+            'job_order_number' => 'JO#' . sprintf('%05d', $series)
         ];
 
     }
