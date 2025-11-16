@@ -79,7 +79,6 @@ class BillsTable
                     ->options([
                         'Partially Paid' => 'Partially Paid',
                         'Fully Paid' => 'Fully Paid',
-                        'Overdue' => 'Overdue',
                     ]),
                 Filter::make('Overdue')
                         ->label('Overdue Bills')

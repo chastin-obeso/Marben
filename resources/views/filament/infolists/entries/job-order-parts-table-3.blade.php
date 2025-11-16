@@ -1,7 +1,7 @@
 
 @php
     $parts = $getRecord()->jobOrderParts;
-    if ($getRecord()->jobOrder->service_fee_bill_id != null){
+    if ($getRecord()->jobOrder->service_fee_bill_id == $getRecord()->id){
         $parts[] = [
             'name' => 'Service Fee',
             'unit_price' => 'N/A',

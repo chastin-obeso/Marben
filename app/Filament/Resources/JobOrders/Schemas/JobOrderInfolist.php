@@ -56,7 +56,8 @@ class JobOrderInfolist
                     ->components([
                         TextEntry::make('service_fee')
                             ->label('Service Fee')
-                            ->prefix('₱'),
+                            ->prefix('₱')
+                            ->formatStateUsing(fn ($state) => number_format($state, 2)),
                         TextEntry::make('service_fee_bill_id')
                             ->color(fn($record) => $record->service_fee_bill_id == null ? 'danger' : 'success')
                             ->state( fn ($record) => $record->service_fee_bill_id == null ? 'Unbilled' : 'Billed '.'('.Bill::find($record->service_fee_bill_id)->bill_number.')' )

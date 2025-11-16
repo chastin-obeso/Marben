@@ -11,7 +11,7 @@ use App\Filament\Resources\ServiceInvoices\ServiceInvoiceResource;
 class ListServiceInvoices extends ListRecords
 {
     protected static string $resource = ServiceInvoiceResource::class;
-
+    public bool $canDelete = false;
     protected function getHeaderActions(): array
     {
         return [

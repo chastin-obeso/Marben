@@ -32,41 +32,6 @@ class JobOrderPolicy
         return $authUser->can('Update:JobOrder');
     }
 
-    public function delete(AuthUser $authUser, JobOrder $jobOrder): bool
-    {
-        return $authUser->can('Delete:JobOrder');
-    }
-
-    public function restore(AuthUser $authUser, JobOrder $jobOrder): bool
-    {
-        return $authUser->can('Restore:JobOrder');
-    }
-
-    public function forceDelete(AuthUser $authUser, JobOrder $jobOrder): bool
-    {
-        return $authUser->can('ForceDelete:JobOrder');
-    }
-
-    public function forceDeleteAny(AuthUser $authUser): bool
-    {
-        return $authUser->can('ForceDeleteAny:JobOrder');
-    }
-
-    public function restoreAny(AuthUser $authUser): bool
-    {
-        return $authUser->can('RestoreAny:JobOrder');
-    }
-
-    public function replicate(AuthUser $authUser, JobOrder $jobOrder): bool
-    {
-        return $authUser->can('Replicate:JobOrder');
-    }
-
-    public function reorder(AuthUser $authUser): bool
-    {
-        return $authUser->can('Reorder:JobOrder');
-    }
-
     public function viewAssigned(AuthUser $authUser, JobOrder $jobOrder): bool
     {
         return $authUser->can('ViewAssigned:JobOrder');

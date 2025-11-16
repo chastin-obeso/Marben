@@ -20,6 +20,8 @@ class UserInfolist
                     ->color(fn($state) => ((int) $state) ? 'success' : 'danger'),
                 TextEntry::make('roles.name')
                     ->label('Role'),
+                TextEntry::make('serviceTypes.service')
+                    ->label('Services Offered'),
                 TextEntry::make('created_at')
                     ->dateTime(),
                 TextEntry::make('updated_at')

@@ -57,6 +57,11 @@ class JobOrdersTable
                     ->toggleable()
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('user.name')
+                    ->label('Assigned Employee')
+                    ->toggleable()
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('description')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)

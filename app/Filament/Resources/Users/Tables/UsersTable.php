@@ -71,7 +71,17 @@ class UsersTable
                     ->searchable(),
                 TextColumn::make('serviceTypes.service')
                     ->label('Services Offered')
-                    ->searchable(),
+                    ->getStateUsing(function ($record) {
+                        $services = $record->serviceTypes->pluck('service')->toArray();
+                        
+                        $count = count($services);
+                        if ($count > 3) {
+                            $firstThree = array_slice($services, 0, 3);
+                            return implode(', ', $firstThree) . '...';
+                        }
+
+                        return implode(', ', $services);
+                    }),
                 TextColumn::make('roles.name')
                     ->searchable()
                     ->label('Role')

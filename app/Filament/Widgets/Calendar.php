@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\JobOrder;
 use Filament\Widgets\Widget;
+use Filament\Facades\Filament;
 use Illuminate\Support\Carbon;
 use Guava\Calendar\Enums\Context;
 use Illuminate\Support\Collection;
@@ -28,10 +29,20 @@ class Calendar extends CalendarWidget
 
     protected bool $dateClickEnabled = true;
 
+     protected int | string | array $columnSpan = 1;
+    protected bool $eventClickEnabled = true;
+
     public function getHeading(): string|HtmlString
     {
-        return  new HtmlString('<div>Calendar</div>');
+        return  new HtmlString('Calendar');
     }
+
+    public static function canView(): bool
+    {
+        return Filament::auth()->user()->can('view:_calendar');
+    }
+
+    protected bool $dayMaxEvents = true;
 
     public function createJobOrderAction(): CreateAction
     {
@@ -40,10 +51,10 @@ class Calendar extends CalendarWidget
                         'date_target' => $info->date->toDateString()
                     ])
                     ->mutateDataUsing(function($data) {
-                        $data['status'] = 'Pending';
-                        
-                        // dd(array_merge($data, $this->generateLastJobOrderNumber()));
-                        return array_merge($data, $this->generateLastJobOrderNumber());
+                    $data['status'] = 'Scheduled';
+                    $data['date_requested'] = now();
+                    $data['service_fee_status'] = 'Unbilled';
+                    return array_merge($data, $this->generateLastJobOrderNumber());
                     });
     }
 
@@ -54,10 +65,11 @@ class Calendar extends CalendarWidget
     public function generateLastJobOrderNumber(): array
     {
         $job_order = JobOrder::whereYear('date_requested', now()->year)->latest('series')->first();
+        
         $series = $job_order?->series + 1;
         return [
             'series' => $series,
-            'job_order_number' => '#JO' . sprintf('%05d', $series)
+            'job_order_number' => 'JO#' . sprintf('%05d', $series)
         ];
 
     }
@@ -88,7 +100,8 @@ class Calendar extends CalendarWidget
                                                 ->start($job->date_target)
                                                 ->end($job->date_target)
                                                 ->allDay()
-                                                ->model($job)
+                                                ->model($job::class)
+                                                ->action('view')
                 );
     }
 

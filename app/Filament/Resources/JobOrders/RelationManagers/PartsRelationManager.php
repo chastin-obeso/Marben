@@ -40,16 +40,18 @@ class PartsRelationManager extends RelationManager
                         $set('total_price', $get('unit_price') * $get('quantity'))
                     )
                     ->numeric()
-                        ->minValue(0)
-                        ->rule('decimal:0,2')
+                    ->minValue(0)
+                    ->rule('decimal:0,2')
                     ->required(),
                 TextInput::make('quantity')
+                    ->numeric()
                     ->label('Quantity')
                     ->live(debounce: 500)
                     ->afterStateUpdated(fn (Get $get, Set $set) =>
                         $set('total_price', $get('unit_price') * $get('quantity'))
                     )
-                    ->numeric()
+                    ->minValue(1)
+                    ->rule('integer')
                     ->required(),
                 TextInput::make('total_price')
                     ->label('Total Price')
@@ -101,7 +103,7 @@ class PartsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Action::make('add_part')
-                    ->visible(fn () => Filament::auth()->user()->can('CreateJobOrderPart:JobOrder'))
+                    ->visible(fn () => Filament::auth()->user()->can('CreateJobOrderPart:JobOrder') && $this->ownerRecord->status != 'Closed')
                     ->label('Add Material/Part')
                     ->icon('heroicon-o-plus')
                     ->schema([
@@ -115,13 +117,14 @@ class PartsRelationManager extends RelationManager
                                 $set('total_price', $get('unit_price') * $get('quantity'))
                             )
                             ->numeric()
-                                ->minValue(0)
-                                ->rule('decimal:0,2')
+                            ->minValue(0)
+                            ->rule('decimal:0,2')
                             ->required(),
                         TextInput::make('quantity')
                             ->label('Quantity')
                             ->numeric()
                             ->minValue(1)
+                            ->integer()
                             ->live(debounce: 500)
                             ->afterStateUpdated(fn (Get $get, Set $set) =>
                                 $set('total_price', $get('unit_price') * $get('quantity'))
@@ -149,6 +152,7 @@ class PartsRelationManager extends RelationManager
                             'details' => 'Added Part: ' . $data['name'],
                             'date' => now(),
                         ]);
+                        $this->ownerRecord->refresh();
                     }),
             ])
             ->recordActions([
