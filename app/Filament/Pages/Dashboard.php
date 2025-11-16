@@ -27,6 +27,15 @@ class Dashboard extends BasePage
         $panel->sidebarCollapsibleOnDesktop()->sidebarFullyCollapsibleOnDesktop();
     }
 
+    public function getWidgets(): array
+    {
+        return [
+            JobOrderTableWidget::class,
+            Calendar::class,
+            
+        ];
+    }
+
   
 
 }

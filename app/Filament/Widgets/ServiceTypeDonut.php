@@ -138,4 +138,5 @@ class ServiceTypeDonut extends ApexChartWidget
     {
         $this->updateOptions();
     }
+
 }
