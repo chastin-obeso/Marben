@@ -29,7 +29,7 @@ class ServiceTypesTable
                     ->numeric()
                     ->toggleable()
                     ->state(function ($record) {
-                        return $record->job_orders()->whereNotIn('status', ['Completed', 'Closed'])->count();
+                        return $record->job_orders()->whereNotIn('status', ['Completed', 'Closed', 'Cancelled'])->count();
                     }),
                 TextColumn::make('completed_job_orders_count')
                     ->label('Completed Job Orders')
@@ -44,6 +44,13 @@ class ServiceTypesTable
                     ->toggleable()
                     ->state(function ($record) {
                         return $record->job_orders()->where('status', 'Closed')->count();
+                    }),
+                TextColumn::make('cancelled_job_orders_count')
+                    ->label('Cancelled Job Orders')
+                    ->numeric()
+                    ->toggleable()
+                    ->state(function ($record) {
+                        return $record->job_orders()->where('status', 'Cancelled')->count();
                     }),
             ])
             ->filters([
