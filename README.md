@@ -10,12 +10,3 @@ printing/binding, and software development.
 1. User Management
 2. Job Order Management
 3. Billing and Payment Management
-
-## Installation
-1. Pull the Repo
-2. Create an .env file from .env-example and change the db accordingly
-
-   
-## Usage
-
-## Changelog
