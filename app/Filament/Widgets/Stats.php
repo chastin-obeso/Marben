@@ -67,7 +67,15 @@ class Stats extends BaseWidget
         return [
             Stat::make('Revenue', '₱' . $formatNumber($revenue))
                 ->description('Revenue ' )
-                ->descriptionIcon($revenueTrend[count($revenueTrend)-1] >= $revenueTrend[0] ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
+                ->descriptionIcon(
+                    !empty($revenueTrend) && count($revenueTrend) > 1
+                        ? ($revenueTrend[count($revenueTrend) - 1] > $revenueTrend[0]
+                            ? 'heroicon-m-arrow-trending-up'
+                            : ($revenueTrend[count($revenueTrend) - 1] < $revenueTrend[0]
+                                ? 'heroicon-m-arrow-trending-down'
+                                : 'heroicon-m-minus'))
+                        : 'heroicon-m-minus'
+                ) 
                 ->chart($revenueTrend)
                 ->color('primary'),
 

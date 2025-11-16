@@ -65,25 +65,25 @@
                 <div class="text-center">
                     
                     <h3 class="mt-5 font-semibold text-lg">REPAIR</h3>
-                    <p class="mt-3 text-gray-600">Build interfaces quickly with reusable UI components.</p>
+                    <p class="mt-3 text-gray-600">Reliable repairs, fast and efficient.</p>
                 </div>
 
                 <div class="text-center">
                     
                     <h3 class="mt-5 font-semibold text-lg">LAYOUTING</h3>
-                    <p class="mt-3 text-gray-600">A modern, minimal style inspired by the Filament ecosystem.</p>
+                    <p class="mt-3 text-gray-600">Designs that flow, layouts that work.</p>
                 </div>
 
                 <div class="text-center">
                     
                     <h3 class="mt-5 font-semibold text-lg">PRINTING/BINDING</h3>
-                    <p class="mt-3 text-gray-600">A modern, minimal style inspired by the Filament ecosystem.</p>
+                    <p class="mt-3 text-gray-600">Fast, reliable, professional printing.</p>
                 </div>
 
                 <div class="text-center">
                     
                     <h3 class="mt-5 font-semibold text-lg">PROGRAMMING</h3>
-                    <p class="mt-3 text-gray-600">Simple, readable, and flexible components for all use cases.</p>
+                    <p class="mt-3 text-gray-600">Code that works, solutions that last.</p>
                 </div>
             </div>
         </div>
@@ -121,7 +121,7 @@
 
 
     <!-- Footer -->
-    <footer class="py-10 text-center text-gray-500 text-sm bg-gradient-to-r from-lime-300 to-white">
+    <footer class="py-10 text-right pr-12 text-gray-500 text-sm bg-gradient-to-r from-lime-300 to-white">
         © 2025 MBR-E Concepts Computer Services. All rights reserved.
     </footer>
 
