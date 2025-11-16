@@ -14,6 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\JobOrders\JobOrderResource;
+use Filament\Tables\Filters\Filter;
 
 class JobOrderTableWidget extends TableWidget
 {
@@ -39,21 +40,25 @@ class JobOrderTableWidget extends TableWidget
     public function table(Table $table): Table
     {
         return $table
+            ->heading('Pending Job Orders')
             ->defaultSort('date_target', 'asc')
             ->query(function (): Builder {
                 $user = Auth::user();
                 if ($user && $user->can('ViewAssigned:JobOrder') && !$user->can('ViewAny:JobOrder')) {
-                    return JobOrder::query()->where('user_id', $user->id)->dateBetween([$this->start, $this->end]);
+                    return JobOrder::query()->where('user_id', $user->id)->dateBetween([$this->start, $this->end])->whereNot('status', 'Closed');
                 }
-                return JobOrder::query()->dateBetween([$this->start, $this->end]); 
+                return JobOrder::query()->dateBetween([$this->start, $this->end])->whereNot('status', 'Closed'); 
             })
             ->columns([
                 Stack::make([
                     TextColumn::make('job_order_number')
                         ->tooltip(
                     function ($record) {
-                            if(now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed') {
-                                return 'Overdue: '. Carbon::parse($record->date_target)->diffForHumans(now());
+                            if(now()->toDateString() > $record->date_target && $record->status !== 'Closed' && $record->status !== 'Completed') {
+                                return 'Delayed: '. Carbon::parse($record->date_target)->diffForHumans(now());
+                            }
+                            if(now()->toDateString() > $record->date_target && $record->status === 'Completed') {
+                                return 'Job Completed but not Closed';
                             }
                             if(now()->toDateString() == $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed') {
                                 return 'Due Today';
@@ -62,7 +67,7 @@ class JobOrderTableWidget extends TableWidget
                             }
                         )
                         ->color(function ($record) { 
-                            if(now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed') {
+                            if(now()->toDateString() > $record->date_target && $record->status !== 'Closed') {
                                 return 'danger';
                             }
                             if(now()->toDateString() == $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed') {

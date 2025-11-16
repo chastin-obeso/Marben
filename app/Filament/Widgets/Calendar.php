@@ -42,7 +42,7 @@ class Calendar extends CalendarWidget
         return Filament::auth()->user()->can('view:_calendar');
     }
 
-    protected bool $dayMaxEvents = true;
+    // protected bool $dayMaxEvents = true;
 
     public function createJobOrderAction(): CreateAction
     {
@@ -84,14 +84,14 @@ class Calendar extends CalendarWidget
             start: $info->start->toDateString(), 
             end: $info->end->toDateString()
         );
-        
         $user = Auth::user();
-                if ($user && $user->can('ViewAssigned:JobOrder') && !$user->can('ViewAny:JobOrder')) {
-                    $query = JobOrder::query()->where('user_id', $user->id);
-                }else{
-                    $query = JobOrder::query();
-                }
+        if ($user && $user->can('ViewAssigned:JobOrder') && !$user->can('ViewAny:JobOrder')) {
+            $query = JobOrder::query()->where('user_id', $user->id);
+        }else{
+            $query = JobOrder::query();
+        }
 
+        $query->whereBetween('date_target', [$info->start->toDateString(), $info->end->toDateString()]);
         $data = $query->get();
         
         return $data
