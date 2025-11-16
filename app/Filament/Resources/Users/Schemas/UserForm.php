@@ -48,13 +48,11 @@ class UserForm
                                 'regex' => 'The phone number must start with 09 and be exactly 11 digits long.',
                             ]),
                             Select::make('role')
+                                ->required()
                                 ->visible(fn () => Filament::auth()->user()->can('Assign:User'))
                                 ->label('Role')
-                                ->relationship('roles', 'name')
+                                ->relationship('roles', 'name', fn($query) => $query->where('name', '!=', 'super_admin'))
                                 ->preload()
-                                ->createOptionForm([
-                                    TextInput::make('name')
-                                ])
                                 ->searchable(),
                             Select::make('service_type')
                                 ->label('Services offered')

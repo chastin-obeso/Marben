@@ -130,12 +130,34 @@ class RoleResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                DeleteBulkAction::make(),
+                EditAction::make()
+                ->disabled(function ($record) {
+                    if($record->name === 'super_admin') {
+                        return true;
+                    }
+                })
+                ->tooltip(function ($record): Htmlable|string|null {
+                    if($record->name === 'super_admin') {
+                        return 'Editing Super Admin role is disabled';
+                    }
+                    return null;
+                }),
+                DeleteAction::make()
+                ->disabled(function ($record) {
+                    if($record->name === 'super_admin') {
+                        return true;
+                    }
+                })
+                ->tooltip(function ($record): Htmlable|string|null {
+                    if($record->name === 'super_admin') {
+                        return 'Deleting Super Admin role is disabled';
+                    }
+                    return null;
+                }),
             ]);
+            // ->toolbarActions([
+            //     DeleteBulkAction::make(),
+            // ]);
     }
 
     public static function getRelations(): array

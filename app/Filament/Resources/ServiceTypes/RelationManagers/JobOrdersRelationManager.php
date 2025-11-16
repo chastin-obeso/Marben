@@ -7,6 +7,7 @@ use Filament\Actions\CreateAction;
 use Filament\Tables\Columns\TextColumn;
 use App\Filament\Resources\JobOrders\JobOrderResource;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 
 class JobOrdersRelationManager extends RelationManager
 {
@@ -14,7 +15,7 @@ class JobOrdersRelationManager extends RelationManager
 
     protected static ?string $title = 'Job Orders';
 
-    // protected static ?string $relatedResource = JobOrderResource::class;
+    protected static ?string $relatedResource = JobOrderResource::class;
 
     public function table(Table $table): Table
     {
@@ -64,5 +65,10 @@ class JobOrdersRelationManager extends RelationManager
                     ->toggleable()
                     ->searchable(),
             ]);
+    }
+
+    public function form(Schema $schema): Schema
+    {
+        return parent::form($schema);
     }
 }

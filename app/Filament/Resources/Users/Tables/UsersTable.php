@@ -53,7 +53,7 @@ class UsersTable
                         if (auth()->user()->id === $user->id) {
                             return true;
                         }
-                        if ($user->role === '1') {
+                        if ($user->role === '1' && auth()->user()->role !== '1') {
                             return true;
                         }
                         return false;
@@ -62,7 +62,7 @@ class UsersTable
                         if(auth()->user()->id === $user->id){
                             return 'Cannot toggle own status!';
                         }
-                        if($user->role === '1'){
+                        if($user->role === '1' && auth()->user()->role !== '1'){
                             return 'Cannot change status of Super Admin!';
                         }
                     })
@@ -117,7 +117,18 @@ class UsersTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                ->disabled(function (User $user) {
+                        if ($user->role === '1' && auth()->user()->role !== '1') {
+                            return true;
+                        }
+                        return false;
+                    })
+                ->tooltip(function(User $user){
+                        if($user->role === '1' && auth()->user()->role !== '1'){
+                            return 'Cannot edit Super Admin!';
+                        }
+                    }),
             ])
             ->toolbarActions([
                 // BulkActionGroup::make([
