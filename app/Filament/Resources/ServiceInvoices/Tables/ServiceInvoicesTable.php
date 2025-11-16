@@ -74,13 +74,27 @@ class ServiceInvoicesTable
             ])
             ->headerActions([
                 Action::make('disable_delete')
-                    ->visible(Filament::auth()->user()->can('Delete:ServiceInvoice'))
+                    ->visible(function ($livewire) { 
+                        if (!Filament::auth()->user()->can('Delete:ServiceInvoice') && !$livewire->canDelete) {
+                            return false;
+                        }
+                        if ($livewire->canDelete) {
+                            return true;
+                        }
+                    })
                     ->label('Lock Delete Action')
                     ->action(function ($livewire) {
                         $livewire->canDelete = false;
                     }),
                 Action::make('enable_delete')
-                    ->visible( Filament::auth()->user()->can('Delete:ServiceInvoice') )
+                    ->visible(function ($livewire) { 
+                        if (!Filament::auth()->user()->can('Delete:ServiceInvoice') && !$livewire->canDelete) {
+                            return false;
+                        }
+                        if (!$livewire->canDelete) {
+                            return true;
+                        }
+                    })
                     ->label('Unlock Delete Action')
                     ->action(function ($livewire) {
                         $livewire->canDelete = true;
