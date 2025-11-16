@@ -25,10 +25,10 @@ return [
         'show_model_path' => true,
         'cluster' => null,
         'tabs' => [
-            'pages' => true,
-            'widgets' => true,
+            'pages' => false,
+            'widgets' =>false,
             'resources' => true,
-            'custom_permissions' => false,
+            'custom_permissions' => true,
         ],
     ],
 
@@ -272,6 +272,9 @@ return [
         'exclude' => [
             \Filament\Widgets\AccountWidget::class,
             \Filament\Widgets\FilamentInfoWidget::class,
+            \App\Filament\Widgets\SalesReportChart::class,
+            \App\Filament\Widgets\ServiceTypeDonut::class,
+            \App\Filament\Widgets\Stats::class,
         ],
     ],
 
@@ -286,7 +289,11 @@ return [
     |
     */
 
-    'custom_permissions' => [],
+    'custom_permissions' => [
+        'View:SalesReport' => 'View Sales Report',
+        'View:Calendar' => 'View Calendar',
+        'View:DashboardTable' => 'View Dashboard Table',
+    ],
 
     /*
     |--------------------------------------------------------------------------

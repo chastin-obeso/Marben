@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\JobOrder;
 use Filament\Widgets\Widget;
+use Filament\Facades\Filament;
 use Illuminate\Support\Carbon;
 use Guava\Calendar\Enums\Context;
 use Illuminate\Support\Collection;
@@ -28,12 +29,17 @@ class Calendar extends CalendarWidget
 
     protected bool $dateClickEnabled = true;
 
-
+     protected int | string | array $columnSpan = 1;
     protected bool $eventClickEnabled = true;
 
     public function getHeading(): string|HtmlString
     {
-        return  new HtmlString('<div>Calendar</div>');
+        return  new HtmlString('Calendar');
+    }
+
+    public static function canView(): bool
+    {
+        return Filament::auth()->user()->can('view:_calendar');
     }
 
     protected bool $dayMaxEvents = true;

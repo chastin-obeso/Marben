@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\JobOrder;
 use Filament\Tables\Table;
 use Livewire\Attributes\On;
+use Filament\Facades\Filament;
 use Illuminate\Support\Carbon;
 use Filament\Widgets\TableWidget;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,8 @@ class JobOrderTableWidget extends TableWidget
     public $start;
     public $end;
 
+     protected int | string | array $columnSpan = 1;
+
     #[On('calendarRangeUpdated')]
     public function setCalendarRange($start, $end): void
     {
@@ -28,8 +31,10 @@ class JobOrderTableWidget extends TableWidget
         $this->resetTable();
     }
 
-
-    
+    public static function canView(): bool
+    {
+        return Filament::auth()->user()->can('view:_dashboard_table');
+    }
 
     public function table(Table $table): Table
     {
