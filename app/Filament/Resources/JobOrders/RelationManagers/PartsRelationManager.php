@@ -148,7 +148,7 @@ class PartsRelationManager extends RelationManager
                     ->action(function (array $data) {
                         $this->ownerRecord->parts()->create($data);
                         $this->ownerRecord->logs()->create([
-                            'details' => 'Added Part: ' . $data['name'],
+                            'details' => Filament::auth()->user()->name . ' added part: ' . $data['name'],
                             'date' => now(),
                         ]);
                         $this->ownerRecord->refresh();

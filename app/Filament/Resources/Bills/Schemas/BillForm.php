@@ -47,15 +47,15 @@ class BillForm
                     ->preload()
                     ->required()
                     ->live()
-                    ->options(function (Get $get) {
-                        $billedJobOrderIds = Bill::pluck('job_order_id')->toArray();
-                        return JobOrder::whereNotIn('id', $billedJobOrderIds)
-                            ->where(function ($query) {
-                                $query->whereHas('unbilledJobOrderParts')
-                                      ->orWhereNull('service_fee_bill_id')
-                                      ->whereNotIn('status', ['Cancelled', 'Closed']);
-                            })
-                            ->pluck('job_order_number', 'id');
+                    ->options(function () {
+                        // dd(JobOrder::whereHas('unbilledJobOrderParts')->orWhereNull('service_fee_bill_id')
+                        //     ->whereNotIn('status', ['Cancelled', 'Closed']) ->pluck('job_order_number')->toArray());
+                        return JobOrder::where(function ($query) {
+                            $query->whereHas('unbilledJobOrderParts')
+                                ->orWhereNull('service_fee_bill_id');
+                        })
+                        ->whereNotIn('status', ['Cancelled', 'Closed']) 
+                        ->pluck('job_order_number', 'id');
                     })
                     ->afterStateUpdated(function ($state, Set $set) {
                         if ($state) {

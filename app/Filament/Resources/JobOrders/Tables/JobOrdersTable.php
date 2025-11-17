@@ -83,12 +83,12 @@ class JobOrdersTable
                     ->sortable(),
                 TextColumn::make('status')
                     ->color(fn($record) => match ($record->status) {
-                                'Scheduled' => 'primary',
-                                'In Progress' => 'primary',
+                                'Scheduled' => 'success',
+                                'In Progress' => 'success',
                                 'On Hold' => 'warning',
-                                'Completed' => 'primary',
+                                'Completed' => 'success',
                                 'Cancelled' => 'danger',
-                                'Closed' => 'primary',
+                                'Closed' => 'success',
                                 default => 'secondary',
                     })
                     ->searchable()

@@ -61,9 +61,7 @@ class ServiceTypesTable
                 EditAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+              
             ]);
     }
 }

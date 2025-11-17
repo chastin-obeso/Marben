@@ -35,7 +35,15 @@ class BillsRelationManager extends RelationManager
                 TextColumn::make('total_amount')->label('Total')->money('php', true)->sortable(),
                 TextColumn::make('amount_due')->label('Amount Due')->money('php', true)->sortable(),
                 TextColumn::make('due_date')->label('Due Date')->date()->sortable(),
-                TextColumn::make('status')->label('Status')->sortable(),
+                TextColumn::make('status')->label('Status')->sortable()->color(function ($record) {
+                    if ($record->status === 'Fully Paid') {
+                        return 'success';
+                    } elseif ($record->status === 'Unpaid') {
+                        return 'danger';
+                    } elseif ($record->status === 'Partially Paid') {
+                        return 'warning';
+                    }
+                }),
             ]);
 
     }

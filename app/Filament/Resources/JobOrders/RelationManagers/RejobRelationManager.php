@@ -62,6 +62,15 @@ class RejobRelationManager extends RelationManager
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
+                    ->color(fn($record) => match ($record->status) {
+                                    'Scheduled' => 'success',
+                                    'In Progress' => 'success',
+                                    'On Hold' => 'warning',
+                                    'Completed' => 'success',
+                                    'Cancelled' => 'danger',
+                                    'Closed' => 'success',
+                                    default => 'secondary',
+                        })
                     ->toggleable()
                     ->searchable()
                     ->sortable(),
