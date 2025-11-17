@@ -32,8 +32,6 @@ class Dashboard extends BasePage
         return [
             Calendar::class,
             JobOrderTableWidget::class,
-            
-            
         ];
     }
 

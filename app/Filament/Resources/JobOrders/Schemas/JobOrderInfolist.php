@@ -4,6 +4,7 @@ namespace App\Filament\Resources\JobOrders\Schemas;
 
 use Dom\Text;
 use App\Models\Bill;
+use App\Models\JobOrder;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\IconEntry;
@@ -18,16 +19,34 @@ class JobOrderInfolist
                 Section::make('Basic Information')
                     ->description('Basic information about the job order.')
                     ->columnSpanFull()
-                    ->columns(4)
+                    ->columns(5)
                     ->components([
                         TextEntry::make('ServiceType.service')
                             ->label('Service Type'),
                         TextEntry::make('customer.name')
                             ->label('Customer'),
-                        TextEntry::make('status'),
+                        TextEntry::make('status')
+                            ->color(fn($record) => match ($record->status) {
+                                'Scheduled' => 'primary',
+                                'In Progress' => 'primary',
+                                'On Hold' => 'warning',
+                                'Completed' => 'primary',
+                                'Cancelled' => 'danger',
+                                'Closed' => 'primary',
+                                default => 'secondary',
+                            }),
                         TextEntry::make('user_id')
                             ->label('Assigned Employee')
                             ->formatStateUsing(fn ($state, $record) => $record->user ? $record->user->name : 'Unassigned'),
+                        TextEntry::make('rejob')
+                            ->label('Rejob from')
+                            ->state(function ($record) {
+                                if (! $record?->re_job_order_id) {
+                                    return 'N/A';
+                                }
+
+                                return JobOrder::find($record->re_job_order_id)?->job_order_number ?? 'N/A';
+                            }),
                         TextEntry::make('date_requested')
                             ->date(),
                         TextEntry::make('date_started')

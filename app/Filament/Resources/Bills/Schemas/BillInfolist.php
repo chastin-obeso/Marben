@@ -58,8 +58,9 @@ class BillInfolist
                                     ->required()
                                     ->numeric()
                                     ->reactive()
+                                    ->minValue(0)
                                     ->maxValue(fn (callable $get) => 
-                                        $get ('amount_due')
+                                        $get ('bill.amount_due')
                                     )
                                     ->prefix('₱'),
                                 Select::make('payment_type')

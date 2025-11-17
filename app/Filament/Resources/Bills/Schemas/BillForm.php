@@ -3,12 +3,14 @@
 namespace App\Filament\Resources\Bills\Schemas;
 
 use BcMath\Number;
+use App\Models\Bill;
 use Livewire\Component;
 use App\Models\JobOrder;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use Filament\Schemas\Components\Livewire;
@@ -16,7 +18,6 @@ use Filament\Infolists\Components\ViewEntry;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use App\Filament\Resources\ServiceInvoices\Pages\CreateServiceInvoice;
-use Filament\Forms\Components\ViewField;
 
 class BillForm
 {
@@ -46,9 +47,18 @@ class BillForm
                     ->preload()
                     ->required()
                     ->live()
+                    ->options(function (Get $get) {
+                        $billedJobOrderIds = Bill::pluck('job_order_id')->toArray();
+                        return JobOrder::whereNotIn('id', $billedJobOrderIds)
+                            ->where(function ($query) {
+                                $query->whereHas('unbilledJobOrderParts')
+                                      ->orWhereNull('service_fee_bill_id')
+                                      ->whereNotIn('status', ['Cancelled', 'Closed']);
+                            })
+                            ->pluck('job_order_number', 'id');
+                    })
                     ->afterStateUpdated(function ($state, Set $set) {
                         if ($state) {
-                            // 1. Fetch the unbilled parts using the model method
                             $parts = JobOrder::find($state)?->unbilledJobOrderParts;
                             $parts_array = $parts->toArray();
                             if(JobOrder::find($state)?->service_fee_bill_id == null){
@@ -60,7 +70,6 @@ class BillForm
                                     'total_price' => $service_fee,
                                 ];
                             }
-                            // 2. Convert to an array and store this array in the form's data state
                             $set('parts_data', $parts_array);
                             $set('total_amount', collect($parts_array)->sum('total_price'));
                         } else {

@@ -41,7 +41,6 @@ class JobOrdersTable
             ->columns([
                 TextColumn::make('job_order_number')
                     ->label('Job Order #')
-                    ->toggleable()
                     ->searchable()
                     ->color(
                         fn ($record) => now()->toDateString() > $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed' ? 'danger' : 'success'
@@ -49,17 +48,15 @@ class JobOrdersTable
                     ->sortable(),
                 TextColumn::make('serviceType.service')
                     ->label('Service')
-                    ->toggleable()
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('customer.name')
                     ->label('Customer')
-                    ->toggleable()
                     ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('user.name')
                     ->label('Assigned Employee')
-                    ->toggleable()
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('description')
@@ -68,7 +65,6 @@ class JobOrdersTable
                     ->html(),
                 TextColumn::make('date_requested')
                     ->date()
-                    ->toggleable()
                     ->sortable(),
                 TextColumn::make('date_started')
                     ->date()
@@ -78,7 +74,6 @@ class JobOrdersTable
                 TextColumn::make('date_target')
                     ->label('Target Date')
                     ->date()
-                    ->toggleable()
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('date_finished')
@@ -87,16 +82,15 @@ class JobOrdersTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
-                    ->color(function ($record) {
-                        if($record->status === 'Cancelled'){
-                            return 'danger';
-                        } elseif($record->status === 'Closed'){
-                            return 'success';
-                        } else {
-                            return '';
-                        }
+                    ->color(fn($record) => match ($record->status) {
+                                'Scheduled' => 'primary',
+                                'In Progress' => 'primary',
+                                'On Hold' => 'warning',
+                                'Completed' => 'primary',
+                                'Cancelled' => 'danger',
+                                'Closed' => 'primary',
+                                default => 'secondary',
                     })
-                    ->toggleable()
                     ->searchable()
                     ->sortable(),
             ])

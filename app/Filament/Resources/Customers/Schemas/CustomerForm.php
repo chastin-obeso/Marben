@@ -20,7 +20,6 @@ class CustomerForm
                     ->required(),
                 TextInput::make('phone')
                     ->required()
-                    ->unique()
                     ->label('Phone number (09XXXXXXXXX)')
                     ->tel()
                     ->regex('/^09[0-9]{9}$/')

@@ -127,7 +127,7 @@ class PartsRelationManager extends RelationManager
                             ->integer()
                             ->live(debounce: 500)
                             ->afterStateUpdated(fn (Get $get, Set $set) =>
-                                $set('total_price', $get('unit_price') * $get('quantity'))
+                                $set('total_price', round($get('unit_price') * $get('quantity'), 2))
                             )
                             ->numeric()
                             ->required(),
@@ -137,8 +137,7 @@ class PartsRelationManager extends RelationManager
                             ->reactive()
                             ->dehydrated()
                             ->numeric()
-                                ->minValue(0)
-                                ->rule('decimal:0,2')
+                            ->formatStateUsing(fn ($state) => number_format($state, 2))
                             ->required(),
                     ])
                     ->successNotification(

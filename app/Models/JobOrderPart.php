@@ -16,7 +16,10 @@ class JobOrderPart extends Model
         'job_order_id',
     ];
 
-    
+    protected $casts = [
+        'unit_price' => 'decimal:2',
+        'total_price' => 'decimal:2',
+    ];
     public $timestamps = false;
 
     public function jobOrder()

@@ -29,6 +29,8 @@ use App\Filament\Resources\Roles\Pages\CreateRole;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Traits\HasShieldFormComponents;
 use BezhanSalleh\PluginEssentials\Concerns\Resource as Essentials;
+use Filament\Actions\CreateAction;
+use Filament\Actions\ViewAction;
 
 class RoleResource extends Resource
 {
@@ -130,6 +132,7 @@ class RoleResource extends Resource
                 //
             ])
             ->recordActions([
+                ViewAction::make(),
                 EditAction::make()
                 ->disabled(function ($record) {
                     if($record->name === 'super_admin') {
@@ -172,7 +175,7 @@ class RoleResource extends Resource
         return [
             'index' => ListRoles::route('/'),
             'create' => CreateRole::route('/create'),
-            'view' => ViewRole::route('/{record}'),
+            // 'view' => ViewRole::route('/{record}'),
             'edit' => EditRole::route('/{record}/edit'),
         ];
     }

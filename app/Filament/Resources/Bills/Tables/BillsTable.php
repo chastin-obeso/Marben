@@ -18,6 +18,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
@@ -34,7 +35,6 @@ class BillsTable
             ->columns([
                 TextColumn::make('bill_number')
                     ->label('Bill #')
-                    ->toggleable()
                     ->color(
                         fn ($record) => now()->toDateString() > $record->due_date && $record->status !== 'Fully Paid' ? 'danger' : 'success'
                     )
@@ -50,21 +50,24 @@ class BillsTable
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 TextColumn::make('total_amount')
-                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Total Amount')
                     ->money('PHP', true)
-                    ->toggleable()
                     ->sortable(),
                 TextColumn::make('amount_due')
                     ->label('Amount Due')
                     ->money('PHP', true)
-                    ->toggleable()
                     ->sortable(),
                 TextColumn::make('due_date')
                     ->date()
-                    ->toggleable()
                     ->sortable(),
                 TextColumn::make('status')
+                    ->color(fn($record) => 
+                        match ($record->status) {
+                            'Partially Paid' => 'warning',
+                            'Fully Paid' => 'success',
+                            default => 'danger',
+                        }
+                    )
                     ->toggleable()
                     ->searchable(),
                 TextColumn::make('bill_date')
@@ -195,6 +198,11 @@ class BillsTable
                             $invoice->bill->updatePaymentStatus($bill->jobOrder);      
                         }
                     
+                    )
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Bill Paid Successfully')
+                            ->success()
                     )
                     ->closeModalByClickingAway(false),
                 // Action::make('refund')

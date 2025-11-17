@@ -34,7 +34,6 @@ class ServiceInvoicesTable
                 TextColumn::make('service_invoice_number')
                     ->label('Invoice Number')
                     ->searchable()
-                    ->toggleable()
                     ->color(
                         fn ($record) => $record->deleted_at ? 'danger' : 'success'
                     )
@@ -42,7 +41,6 @@ class ServiceInvoicesTable
                 TextColumn::make('amount_paid')
                     ->label('Amount Paid')
                     ->prefix('₱')
-                    ->toggleable()
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('payment_type')
@@ -57,11 +55,9 @@ class ServiceInvoicesTable
                 TextColumn::make('payment_date')
                     ->label('Payment Date')
                     ->date()
-                    ->toggleable()
                     ->sortable(),
                 TextColumn::make('bill.bill_number')
                     ->label('Bill Number')
-                    ->toggleable()
                     ->sortable(),
             ])
             ->filters([
@@ -106,6 +102,7 @@ class ServiceInvoicesTable
                 DeleteAction::make()
                     ->name('delete_invoice')
                     ->disabled(fn ($livewire) => !$livewire->canDelete)
+                    ->color(fn ($livewire) => $livewire->canDelete ? 'danger' : 'gray')
                     ->visible(Filament::auth()->user()->can('Delete:ServiceInvoice'))
                     ->tooltip( fn ($livewire) => !$livewire->canDelete ? 'Delete action is locked. Unlock to enable.' : null )
                     ->requiresConfirmation()

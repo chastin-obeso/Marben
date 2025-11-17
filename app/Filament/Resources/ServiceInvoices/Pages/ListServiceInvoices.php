@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ServiceInvoices\Pages;
 use App\Models\Bill;
 use App\Models\ServiceInvoice;
 use Filament\Actions\CreateAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\ServiceInvoices\ServiceInvoiceResource;
 
@@ -33,6 +34,11 @@ class ListServiceInvoices extends ListRecords
                         }
                         $invoice->bill->updatePaymentStatus($bill->jobOrder);
                     })
+                ->successNotification(
+                    Notification::make()
+                        ->title('Service Invoice Created Successfully')
+                        ->success()
+                )
                 ->closeModalByClickingAway(false),
         ];
     }

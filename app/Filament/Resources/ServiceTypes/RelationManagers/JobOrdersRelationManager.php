@@ -22,7 +22,6 @@ class JobOrdersRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('Job Orders')
             ->headerActions([
-                CreateAction::make(),
             ])
             ->columns([
                 TextColumn::make('job_order_number')

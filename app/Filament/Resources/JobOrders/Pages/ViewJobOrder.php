@@ -54,7 +54,7 @@ class ViewJobOrder extends ViewRecord
                 ->visible(fn () => $this->record->status === 'In Progress')
                 ->button()
                 ->label('Hold Job Order')
-                ->color('danger')
+                ->color('warning')
                 ->action(function () {
                     $this->record->status = 'On Hold';
                     $this->record->save();

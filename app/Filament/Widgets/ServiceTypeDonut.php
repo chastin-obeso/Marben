@@ -98,7 +98,7 @@ class ServiceTypeDonut extends ApexChartWidget
             $number < 1000000 => round($number / 1000, 2) . 'k',
             default => round($number / 1000000, 2) . 'm',
         };
-        return 'Sales by Service Type (' . ($this->filters['target_year'] ?? now()->year) . ') - Total: ' . $formatNumber(array_sum($this->getOptions()['series']));
+        return 'Revenue by Service Type (' . ($this->filters['target_year'] ?? now()->year) . ') - Total: ' . $formatNumber(array_sum($this->getOptions()['series']));
     }
     protected function extraJsOptions(): ?RawJs
     {

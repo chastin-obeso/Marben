@@ -30,12 +30,19 @@ class UsersTable
                     ->label('Email address')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('name'),
+                TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('phone')
+                    ->toggleable()
+                    ->toggledHiddenByDefault(false)
                     ->searchable()
                     ->state(fn ($record) => $record->phone ?? 'N/A'),
                 TextColumn::make('username')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->toggledHiddenByDefault(false),
                 ToggleColumn::make('status')
                     ->visible(Auth::user()->can('ChangeStatus:User'))
                     ->label('Active')
@@ -70,6 +77,8 @@ class UsersTable
                     ->offIcon('heroicon-o-x-mark')
                     ->searchable(),
                 TextColumn::make('serviceTypes.service')
+                    ->toggleable()
+                    ->toggledHiddenByDefault(false)
                     ->label('Services Offered')
                     ->getStateUsing(function ($record) {
                         $services = $record->serviceTypes->pluck('service')->toArray();
@@ -84,8 +93,10 @@ class UsersTable
                     }),
                 TextColumn::make('roles.name')
                     ->searchable()
+                    ->badge()
                     ->label('Role')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggledHiddenByDefault(false)
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

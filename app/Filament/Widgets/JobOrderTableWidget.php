@@ -60,8 +60,11 @@ class JobOrderTableWidget extends TableWidget
                             if(now()->toDateString() > $record->date_target && $record->status === 'Completed') {
                                 return 'Job Completed but not Closed';
                             }
-                            if(now()->toDateString() == $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed') {
+                            if(now()->toDateString() == $record->date_target && $record->status!=='Completed' &&  $record->status !== 'Closed') {
                                 return 'Due Today';
+                            }
+                            if(now()->toDateString() == $record->date_target && $record->status !== 'Closed'){
+                                return 'Job Completed but not Closed; Due today';
                             }
                             else return 'On Schedule';
                             }
@@ -70,7 +73,7 @@ class JobOrderTableWidget extends TableWidget
                             if(now()->toDateString() > $record->date_target && $record->status !== 'Closed') {
                                 return 'danger';
                             }
-                            if(now()->toDateString() == $record->date_target && $record->status !== 'Completed' && $record->status !== 'Closed') {
+                            if(now()->toDateString() == $record->date_target && $record->status !== 'Closed') {
                                 return 'warning';
                             }
                             else return 'success'; 

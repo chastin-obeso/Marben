@@ -67,9 +67,14 @@
     @apply text-white;
 }
 
-.fi-modal-description
+p.fi-modal-description
 {
-    @apply text-gray-800;
+    @apply text-black;
+}
+
+.dark p.fi-modal-description
+{
+    @apply text-gray-300;
 }
 
 .fi-modal-description

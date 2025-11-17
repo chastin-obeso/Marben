@@ -109,7 +109,7 @@ class SalesReportChart extends ApexChartWidget
     }
     protected function getHeading(): ?string
     {
-        return 'Sales by Service Type (' . ($this->filters['target_year'] ?? now()->year) . ')';
+        return 'Revenue by Service Type (' . ($this->filters['target_year'] ?? now()->year) . ')';
     }
     protected function extraJsOptions(): ?RawJs
     {
