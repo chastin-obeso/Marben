@@ -61,7 +61,8 @@ class ServiceTypesTable
                 ViewAction::make(),
                 EditAction::make(),
                 DeleteAction::make()
-                ->disabled(fn ($record) => $record->job_orders()->exists()),
+                ->disabled(fn ($record) => $record->job_orders()->exists())
+                ->tooltip(fn ($record) => $record->job_orders()->exists() ? 'Cannot delete Service Type with associated Job Orders.' : null),
             ])
             ->toolbarActions([
               
