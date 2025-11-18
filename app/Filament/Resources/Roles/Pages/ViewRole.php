@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Roles\Pages;
 
-use App\Filament\Resources\Roles\RoleResource;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ViewRecord;
+use App\Filament\Resources\Roles\RoleResource;
 
 class ViewRole extends ViewRecord
 {
@@ -15,7 +16,7 @@ class ViewRole extends ViewRecord
     protected function getActions(): array
     {
         return [
-            EditAction::make(),
+            ViewAction::make(),
         ];
     }
 }

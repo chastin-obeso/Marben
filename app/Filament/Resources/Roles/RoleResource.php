@@ -108,6 +108,11 @@ class RoleResource extends Resource
                     ->label(__('filament-shield::filament-shield.column.name'))
                     ->formatStateUsing(fn (string $state): string => Str::headline($state))
                     ->searchable(),
+                TextColumn::make('users_count')
+                    ->badge()
+                    ->label('Number of Users')
+                    ->counts('users')
+                    ->color('primary'),
                 TextColumn::make('guard_name')
                     ->badge()
                     ->color('warning')
@@ -150,10 +155,16 @@ class RoleResource extends Resource
                     if($record->name === 'super_admin') {
                         return true;
                     }
+                    else if($record->users()->exists()) {
+                        return true;
+                    }
                 })
                 ->tooltip(function ($record): Htmlable|string|null {
                     if($record->name === 'super_admin') {
                         return 'Deleting Super Admin role is disabled';
+                    }
+                    else if($record->users()->exists()) {
+                        return 'Deleting role with assigned users is disabled';
                     }
                     return null;
                 }),

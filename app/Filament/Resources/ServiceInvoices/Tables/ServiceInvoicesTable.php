@@ -101,10 +101,28 @@ class ServiceInvoicesTable
                 ->modalHeading('Service Invoice Details'),
                 DeleteAction::make()
                     ->name('delete_invoice')
-                    ->disabled(fn ($livewire) => !$livewire->canDelete)
+                    ->disabled(function ($livewire, ServiceInvoice $invoice) { 
+                        if(!$livewire->canDelete){
+                            return true;
+                        }
+                        else if($invoice->bill->jobOrder->status === 'Closed'){
+                            return true;
+                        }
+                        else return false;
+                    })
                     ->color(fn ($livewire) => $livewire->canDelete ? 'danger' : 'gray')
                     ->visible(Filament::auth()->user()->can('Delete:ServiceInvoice'))
-                    ->tooltip( fn ($livewire) => !$livewire->canDelete ? 'Delete action is locked. Unlock to enable.' : null )
+                    ->tooltip( 
+                        function ($livewire, ServiceInvoice $invoice) { 
+                            if(!$livewire->canDelete){
+                                return 'Delete action is locked. Unlock to enable.';
+                            }
+                            else if($invoice->bill->jobOrder->status === 'Closed'){
+                                return 'Cannot delete invoice for a closed Job Order.';
+                            }
+                            else return false;
+                        }
+                     )
                     ->requiresConfirmation()
                     ->modalHeading('Delete Service Invoice')
                     ->modalDescription('Are you sure you want to remove this payment? This action cannot be undone.')
@@ -112,9 +130,31 @@ class ServiceInvoicesTable
                         $bill = $invoice->bill;
                         if ($bill) {
                             $bill->amount_due += $invoice->amount_paid;
-                            $bill->save();
+                            
                         }
-                        $invoice->bill->updatePaymentStatus($invoice->bill->jobOrder);
+                        $amount_due = $bill->amount_due;
+                        $jobOrder = $bill->jobOrder;
+                        $newStatus = 'Unpaid';
+
+                            if ($amount_due <= 0) {
+                                $newStatus = 'Fully Paid';
+                                $jobOrder->logs()->create([
+                                    'details' => $bill->bill_number . ' fully paid',
+                                    'date' => now(),
+                                ]);
+
+                            } elseif ($amount_due > 0 && $amount_due != $bill->total_amount) {
+                                $newStatus = 'Partially Paid';
+                            }
+                            elseif ($amount_due == $bill->total_amount) {
+                                $newStatus = 'Unpaid';
+                            }
+
+                            if ($bill->status !== $newStatus) {
+                                $bill->status = $newStatus;
+                                $bill->save();
+                            }
+                            $bill->save();
                         $invoice->delete();
                     }),
                 EditAction::make()
@@ -179,12 +219,32 @@ class ServiceInvoicesTable
                         $invoice = $record;
                         $bill = $invoice->bill; 
                         if ($bill) {
-                            $totalPaid = $bill->serviceInvoices()->sum('amount_paid');
-                            $totalPaid -= $invoice->amount_paid;
-                            $totalPaid += $data['amount_paid'];
-                            $bill->amount_due = $bill->total_amount - $totalPaid;
+                            $bill->amount_due += $invoice->amount_paid;
+                            $bill->amount_due -= $data['amount_paid'];
+                            $amount_due = $bill->amount_due;
+                            $jobOrder = $bill->jobOrder;
+                            $newStatus = 'Unpaid';
+
+                            if ($amount_due <= 0) {
+                                $newStatus = 'Fully Paid';
+                                $jobOrder->logs()->create([
+                                    'details' => $bill->bill_number . ' fully paid',
+                                    'date' => now(),
+                                ]);
+
+                            } elseif ($amount_due > 0  && $amount_due != $bill->total_amount) {
+                                $newStatus = 'Partially Paid';
+                            }
+                            elseif ($amount_due == $bill->total_amount ) {
+                                $newStatus = 'Unpaid';
+                            }
+
+                            if ($bill->status !== $newStatus) {
+                                $bill->status = $newStatus;
+                                $bill->save();
+                            }
                             $bill->save();
-                            $bill->updatePaymentStatus($bill->jobOrder); 
+                            
                         }
                         $invoice->update($data);
                     }),
