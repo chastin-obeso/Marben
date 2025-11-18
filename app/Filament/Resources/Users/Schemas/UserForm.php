@@ -49,8 +49,18 @@ class UserForm
                                 'regex' => 'The phone number must start with 09 and be exactly 11 digits long.',
                             ]),
                             Select::make('role')
+                                ->visible(function ($record)  {
+                                    if($record -> role === '1') {
+                                        return false;
+                                    }
+                                    else if(Filament::auth()->user()->can('Assign:User') === false) {
+                                        return false;
+                                    }
+                                    else {
+                                        return true;
+                                    }
+                                })
                                 ->required()
-                                ->visible(fn () => Filament::auth()->user()->can('Assign:User'))
                                 ->label('Role')
                                 ->relationship('roles', 'name', fn($query) => $query->where('name', '!=', 'super_admin'))
                                 ->preload()
