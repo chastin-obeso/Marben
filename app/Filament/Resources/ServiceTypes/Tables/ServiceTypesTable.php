@@ -6,6 +6,7 @@ use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -59,6 +60,8 @@ class ServiceTypesTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                DeleteAction::make()
+                ->disabled(fn ($record) => $record->job_orders()->exists()),
             ])
             ->toolbarActions([
               
