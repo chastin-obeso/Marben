@@ -229,6 +229,7 @@ return [
                 'view',
                 'create',
                 'update',
+                'delete',
             ],
         ],
         'exclude' => [

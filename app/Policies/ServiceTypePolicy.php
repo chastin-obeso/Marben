@@ -32,4 +32,9 @@ class ServiceTypePolicy
         return $authUser->can('Update:ServiceType');
     }
 
+    public function delete(AuthUser $authUser, ServiceType $serviceType): bool
+    {
+        return $authUser->can('Delete:ServiceType');
+    }
+
 }

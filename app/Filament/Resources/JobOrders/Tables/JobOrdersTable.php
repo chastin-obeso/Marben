@@ -37,7 +37,7 @@ class JobOrdersTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('job_order_number', 'desc')
+            ->defaultSort('date_target', 'asc')
             ->columns([
                 TextColumn::make('job_order_number')
                     ->label('Job Order #')
